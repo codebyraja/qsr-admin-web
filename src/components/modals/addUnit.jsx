@@ -1,6 +1,65 @@
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import ApiService from "../../services/api";
+import { toast } from "react-toastify";
 
 const AddUnits = () => {
+  const initialFormState = {
+    name: "",
+    printName: "",
+    status: true,
+    masterType: 8,
+    users: "admin",
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handler = () => {
+      setFormData(initialFormState);
+    };
+
+    const modal = document.getElementById("add-units");
+    modalRef.current = modal;
+
+    if (modal) {
+      modal.addEventListener("show.bs.modal", handler);
+    }
+
+    return () => {
+      if (modalRef.current) {
+        modalRef.current.removeEventListener("show.bs.modal", handler);
+      }
+    };
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await ApiService.post("/SaveMasterDetails", formData);
+
+      console.log("Response from server:", response);
+      // If using Axios, response.data would have the SQL result
+      if (response?.status === 1) {
+        toast.success(response.msg || "Unit added successfully!");
+        setFormData(initialFormState);
+      } else {
+        toast.error(response?.msg || "Failed to add unit.");
+      }
+    } catch (error) {
+      toast.error("Server error while adding unit.");
+    }
+  };
+
   return (
     <div className="modal fade" id="add-units">
       <div className="modal-dialog modal-dialog-centered">
@@ -20,19 +79,33 @@ const AddUnits = () => {
                   <span aria-hidden="true">×</span>
                 </button>
               </div>
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="modal-body">
                   <div className="mb-3">
                     <label className="form-label">
                       Unit<span className="text-danger ms-1">*</span>
                     </label>
-                    <input type="text" className="form-control" />
+                    <input
+                      type="text"
+                      name="name"
+                      className="form-control"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                    />
                   </div>
                   <div className="mb-3">
                     <label className="form-label">
                       Print Name<span className="text-danger ms-1">*</span>
                     </label>
-                    <input type="text" className="form-control" />
+                    <input
+                      type="text"
+                      name="printName"
+                      className="form-control"
+                      value={formData.printName}
+                      onChange={handleChange}
+                      required
+                    />
                   </div>
                   <div className="mb-0">
                     <div className="status-toggle modal-status d-flex justify-content-between align-items-center">
@@ -41,11 +114,13 @@ const AddUnits = () => {
                       </span>
                       <input
                         type="checkbox"
-                        id="user2"
+                        id="unit-status"
+                        name="status"
                         className="check"
-                        defaultChecked
+                        checked={formData.status}
+                        onChange={handleChange}
                       />
-                      <label htmlFor="user2" className="checktoggle" />
+                      <label htmlFor="unit-status" className="checktoggle" />
                     </div>
                   </div>
                 </div>
@@ -57,13 +132,12 @@ const AddUnits = () => {
                   >
                     Cancel
                   </button>
-                  <Link
-                    to="#"
-                    data-bs-dismiss="modal"
+                  <button
+                    type="submit"
                     className="btn btn-primary fs-13 fw-medium p-2 px-3"
                   >
                     Add Unit
-                  </Link>
+                  </button>
                 </div>
               </form>
             </div>

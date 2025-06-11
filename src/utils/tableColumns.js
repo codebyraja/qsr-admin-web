@@ -5,6 +5,11 @@ export const categoryColumn = [
     sorter: (a, b) => a.name.localeCompare(b.name),
   },
   {
+    title: "Print Name",
+    dataIndex: "printName",
+    sorter: (a, b) => a.printName.localeCompare(b.printName),
+  },
+  {
     title: "Created On",
     dataIndex: "createdon",
     sorter: (a, b) => new Date(a.createdon) - new Date(b.createdon),
@@ -28,9 +33,14 @@ export const categoryColumn = [
 
 export const unitColumn = [
   {
-    title: "Category",
-    dataIndex: "unit",
-    sorter: (a, b) => a.unit.localeCompare(b.unit),
+    title: "Unit",
+    dataIndex: "name",
+    sorter: (a, b) => a.name.localeCompare(b.name),
+  },
+  {
+    title: "Print Name",
+    dataIndex: "printName",
+    sorter: (a, b) => a.printName.localeCompare(b.printName),
   },
   {
     title: "Created On",

@@ -1,110 +1,196 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Select from "react-select";
-import {
-  ArrowLeft,
-  Image,
-  Info,
-  LifeBuoy,
-  PlusCircle,
-  X,
-} from "feather-icons-react/build/IconComponents";
+import { ArrowLeft } from "feather-icons-react/build/IconComponents";
+import { toast } from "react-toastify";
 import { all_routes } from "../Router/all_routes";
-import ApiService from "../services/api";
-import { generateSlug } from "../utils/common";
+import {
+  generateSlug,
+  handleImageChange,
+  handleRemoveImage,
+} from "../utils/common";
 import RefreshIcon from "../core/common/tooltip-content/refresh";
 import CollapesIcon from "../core/common/tooltip-content/collapes";
-import TextEditor from "../feature-module/inventory/texteditor";
-import ImageWithBasePath from "../core/img/imagewithbasebath";
 import AddUnits from "../components/modals/addUnit";
 import AddCategorys from "../components/modals/addCategory";
+import { API_BASE_URL } from "../environment";
+import Loader from "../components/loader/loader";
+import ProductInfo from "../components/product/ProductInfo";
+import PricingStock from "../components/product/PricingStock";
+import ProductImages from "../components/product/ProductImages";
+import {
+  DISCOUNT_TYPES as discountType,
+  PRODUCT_TYPES as productType,
+  TAX_TYPES as taxType,
+} from "../constants";
+
+const defaultFormData = {
+  code: 0,
+  productName: "",
+  printName: "",
+  parentGrp: 0,
+  productSlug: "",
+  sku: "",
+  unit: "",
+  description: "",
+  productType: 0,
+  productTypeName: "",
+  qty: 0,
+  minQty: 0,
+  price: 0,
+  discount: 0,
+  taxType: 0,
+  taxTypeName: "",
+  discountType: "",
+  discountTypeName: "",
+  isActive: true,
+  masterType: 6,
+  users: "string",
+  images: [],
+};
 
 const AddProduct = () => {
   const route = all_routes;
-  const [formData, setFormData] = useState({
-    productName: "",
-    productSlug: "",
-    sku: "",
-    sellingType: "",
-    category: "",
-    brand: "",
-    unit: "",
-    barcodeSymbology: "",
-    itemCode: "",
-    description: "",
-    quantity: "",
-    price: "",
-    taxType: "",
-    discountType: "",
-    discountValue: "",
-    quantityAlert: "",
+
+  const [formData, setFormData] = useState(defaultFormData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [category, setCategory] = useState([]);
+  const [unit, setUnit] = useState([]);
+  const [images, setImages] = useState([]);
+  const [dropdowns, setDropdowns] = useState({
+    selectedCategory: null,
+    selectedUnit: null,
+    selectedProductType: null,
+    selectedTaxType: null,
+    selectedDiscountType: null,
   });
 
-  // Update generateSKU function
-  const generateSKU = async () => {
-    try {
-      const data = await ApiService.getGenerateSku();
-      console.log("Generated SKU:", data);
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        sku: data.sku || "",
-      }));
-    } catch (error) {
-      console.error("Failed to generate SKU", error);
-    }
-  };
-
-  const handelChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-      // Generate slug if the field is productName
       ...(name === "productName" && { productSlug: generateSlug(value) }),
     }));
   };
 
-  const category = [
-    { value: "choose", label: "Choose" },
-    { value: "lenovo", label: "Lenovo" },
-    { value: "electronics", label: "Electronics" },
-  ];
-
-  const unit = [
-    { value: "choose", label: "Choose" },
-    { value: "kg", label: "Kg" },
-    { value: "pc", label: "Pc" },
-  ];
-
-  const producttype = [
-    { value: "choose", label: "Choose" },
-    { value: 1, label: "Veg" },
-    { value: 2, label: "Non-Veg" },
-  ];
-
-  const taxtype = [
-    { value: "exclusive", label: "Exclusive" },
-    { value: "salesTax", label: "Sales Tax" },
-  ];
-
-  const discounttype = [
-    { value: "choose", label: "Choose" },
-    { value: "percentage", label: "Percentage" },
-    { value: "cash", label: "Cash" },
-  ];
-
-  const [isImageVisible, setIsImageVisible] = useState(true);
-
-  const handleRemoveProduct = () => {
-    setIsImageVisible(false);
+  const handleDropdownChange = (name, selectedOption) => {
+    setDropdowns((prev) => ({ ...prev, [name]: selectedOption }));
+    setFormData((prev) => ({ ...prev, [name]: selectedOption?.value || "" }));
   };
-  const [isImageVisible1, setIsImageVisible1] = useState(true);
 
-  const handleRemoveProduct1 = () => {
-    setIsImageVisible1(false);
+  const getMasterList = async (type) => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`${API_BASE_URL}/GetMasterList/${type}`);
+      const result = await res.json();
+      if (type === 5) setCategory(result?.data);
+      if (type === 8) setUnit(result?.data);
+    } catch {
+      toast.error("Failed to fetch master list");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const generateSKU = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(`${API_BASE_URL}/GenerateSku/generate-sku`);
+      const { sku } = await res.json();
+      setFormData((prev) => ({ ...prev, sku }));
+    } catch {
+      console.error("Failed to generate SKU");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClear = () => {
+    setFormData(defaultFormData);
+    setDropdowns({
+      selectedCategory: null,
+      selectedUnit: null,
+      selectedProductType: null,
+      selectedTaxType: null,
+      selectedDiscountType: null,
+    });
+    setImages([]);
+  };
+
+  const appendFormData = () => {
+    const fd = new FormData();
+    const getLabel = (key) => dropdowns[key]?.label || "";
+    const getValue = (key) => dropdowns[key]?.value || 0;
+
+    const entries = {
+      Code: formData.code,
+      Name: formData.productName,
+      PrintName: formData.productName,
+      ParentGrp: getValue("selectedCategory"),
+      Unit: getValue("selectedUnit"),
+      ProductType: getValue("selectedProductType"),
+      ProductTypeName: getLabel("selectedProductType"),
+      TaxType: getValue("selectedTaxType"),
+      TaxTypeName: getLabel("selectedTaxType"),
+      DiscountType: getValue("selectedDiscountType"),
+      DiscountTypeName: getLabel("selectedDiscountType"),
+      Description: formData.description,
+      Qty: formData.qty,
+      MinQty: formData.minQty,
+      Price: formData.price,
+      Discount: formData.discount,
+      Slug: formData.productSlug,
+      Sku: formData.sku,
+      IsActive: formData.isActive ? "true" : "false",
+      MasterType: formData.masterType,
+      Users: formData.users,
+    };
+
+    Object.entries(entries).forEach(([key, val]) => {
+      fd.append(key, val ?? "");
+    });
+
+    images.forEach((img) => {
+      fd.append("images", img.file);
+    });
+
+    return fd;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const formDatadt = appendFormData();
+      const response = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
+        method: "POST",
+        body: formDatadt,
+      });
+
+      const result = await response.json();
+      console.log("result", result);
+      result?.status === 1 ? handleClear() : null;
+      toast[result?.status === 1 ? "success" : "error"](
+        generateSKU(),
+        result?.msg || "Something went wrong"
+      );
+    } catch (error) {
+      toast.error("Failed to add product.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getMasterList(5); // Category
+    getMasterList(8); // Unit
+    generateSKU();
+  }, []);
+
   return (
     <>
+      {isLoading && <Loader />}
       <div className="page-wrapper">
         <div className="content">
           <div className="page-header">
@@ -120,415 +206,72 @@ const AddProduct = () => {
               <li>
                 <div className="page-btn">
                   <Link to={route.productlist} className="btn btn-secondary">
-                    <ArrowLeft className="me-2" />
-                    Back to Product
+                    <ArrowLeft className="me-2" /> Back to Product
                   </Link>
                 </div>
               </li>
             </ul>
           </div>
-          {/* /add */}
-          <form className="add-product-form">
+
+          <form className="add-product-form" onSubmit={handleSubmit}>
             <div className="add-product">
-              <div
-                className="accordions-items-seperate"
-                id="accordionSpacingExample"
-              >
-                <div className="accordion-item border mb-4">
-                  <h2 className="accordion-header" id="headingSpacingOne">
-                    <div
-                      className="accordion-button collapsed bg-white"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#SpacingOne"
-                      aria-expanded="true"
-                      aria-controls="SpacingOne"
-                    >
-                      <div className="d-flex align-items-center justify-content-between flex-fill">
-                        <h5 className="d-flex align-items-center">
-                          <Info className="text-primary me-2" />
-                          <span>Product Information</span>
-                        </h5>
-                      </div>
-                    </div>
-                  </h2>
-                  <div
-                    id="SpacingOne"
-                    className="accordion-collapse collapse show"
-                    aria-labelledby="headingSpacingOne"
-                  >
-                    <div className="accordion-body border-top">
-                      <div className="row">
-                        <div className="col-sm-6 col-12">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Product Name
-                              <span className="text-danger ms-1">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              name="productName"
-                              value={formData.productName}
-                              onChange={handelChange}
-                              required
-                            />
-                          </div>
-                        </div>
-                        <div className="col-sm-6 col-12">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              Slug<span className="text-danger ms-1">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              name="productSlug"
-                              value={formData.productSlug}
-                              required
-                              disabled
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-sm-6 col-12">
-                          <div className="mb-3 list position-relative">
-                            <label className="form-label">
-                              SKU<span className="text-danger ms-1">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control list"
-                              name="sku"
-                              value={formData.sku}
-                              disabled
-                            />
-                            <button
-                              type="button"
-                              className="btn btn-primaryadd"
-                              onClick={generateSKU}
-                            >
-                              Generate
-                            </button>
-                          </div>
-                        </div>
-                        <div className="col-sm-6 col-12">
-                          <div className="mb-3">
-                            <div className="add-newplus">
-                              <label className="form-label">
-                                Unit
-                                <span className="text-danger ms-1">*</span>
-                              </label>
-                              <Link
-                                to="#"
-                                data-bs-toggle="modal"
-                                data-bs-target="#add-units"
-                              >
-                                <PlusCircle
-                                  data-feather="plus-circle"
-                                  className="plus-down-add"
-                                />
-                                <span>Add New</span>
-                              </Link>
-                            </div>
-                            <Select
-                              classNamePrefix="react-select"
-                              options={unit}
-                              placeholder="Choose"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="addservice-info">
-                        <div className="row">
-                          <div className="col-sm-6 col-12">
-                            <div className="mb-3">
-                              <div className="add-newplus">
-                                <label className="form-label">
-                                  Category
-                                  <span className="text-danger ms-1">*</span>
-                                </label>
-                                {/* <Link
-                                  to="#"
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#add-prod-categorys"
-                                >
-                                  <PlusCircle
-                                    data-feather="plus-circle"
-                                    className="plus-down-add"
-                                  />
-                                  <span>Add New</span>
-                                </Link> */}
-                              </div>
-                              <Select
-                                classNamePrefix="react-select"
-                                options={category}
-                                placeholder="Choose"
-                                disabled
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-12">
-                        <div className="summer-description-box">
-                          <label className="form-label">Description</label>
-                          <TextEditor />
-                          <p className="fs-14 mt-1">Maximum 60 Words</p>
-                        </div>
-                      </div>
-                      {/* /Editor */}
-                    </div>
-                  </div>
-                </div>
-                <div className="accordion-item border mb-4">
-                  <h2 className="accordion-header" id="headingSpacingTwo">
-                    <div
-                      className="accordion-button collapsed bg-white"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#SpacingTwo"
-                      aria-expanded="true"
-                      aria-controls="SpacingTwo"
-                    >
-                      <div className="d-flex align-items-center justify-content-between flex-fill">
-                        <h5 className="d-flex align-items-center">
-                          <LifeBuoy
-                            data-feather="life-buoy"
-                            className="text-primary me-2"
-                          />
-                          <span>Pricing &amp; Stocks</span>
-                        </h5>
-                      </div>
-                    </div>
-                  </h2>
-                  <div
-                    id="SpacingTwo"
-                    className="accordion-collapse collapse show"
-                    aria-labelledby="headingSpacingTwo"
-                  >
-                    <div className="accordion-body border-top">
-                      <div className="mb-3s">
-                        <label className="form-label">
-                          Product Type
-                          <span className="text-danger ms-1">*</span>
-                        </label>
-                        <div className="single-pill-product mb-3">
-                          <ul
-                            className="nav nav-pills"
-                            id="pills-tab1"
-                            role="tablist"
-                          >
-                            <li className="nav-item" role="presentation">
-                              <span
-                                className="custom_radio me-4 mb-0 active"
-                                id="pills-home-tab"
-                                data-bs-toggle="pill"
-                                data-bs-target="#pills-home"
-                                role="tab"
-                                aria-controls="pills-home"
-                                aria-selected="true"
-                              >
-                                <input
-                                  type="radio"
-                                  className="form-control"
-                                  name="payment"
-                                />
-                                <span className="checkmark" /> Single Product
-                              </span>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="tab-content" id="pills-tabContent">
-                        <div
-                          className="tab-pane fade show active"
-                          id="pills-home"
-                          role="tabpanel"
-                          aria-labelledby="pills-home-tab"
-                        >
-                          <div className="single-product">
-                            <div className="row">
-                              <div className="col-lg-4 col-sm-6 col-12">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    Product Type
-                                    <span className="text-danger ms-1">*</span>
-                                  </label>
-                                  <Select
-                                    classNamePrefix="react-select"
-                                    options={producttype}
-                                    placeholder="Choose"
-                                    name="sellingType"
-                                    // value={formData.sellingType}
-                                    required
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 col-12">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    Quantity
-                                    <span className="text-danger ms-1">*</span>
-                                  </label>
-                                  <input type="text" className="form-control" />
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 col-12">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    Price
-                                    <span className="text-danger ms-1">*</span>
-                                  </label>
-                                  <input type="text" className="form-control" />
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 col-12">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    Tax Type
-                                    <span className="text-danger ms-1">*</span>
-                                  </label>
-                                  <Select
-                                    classNamePrefix="react-select"
-                                    options={taxtype}
-                                    placeholder="Select Option"
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 col-12">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    Discount Type
-                                    <span className="text-danger ms-1">*</span>
-                                  </label>
-                                  <Select
-                                    classNamePrefix="react-select"
-                                    options={discounttype}
-                                    placeholder="Choose"
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 col-12">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    Discount Value
-                                    <span className="text-danger ms-1">*</span>
-                                  </label>
-                                  <input className="form-control" type="text" />
-                                </div>
-                              </div>
-                              <div className="col-lg-4 col-sm-6 col-12">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    Quantity Alert
-                                    <span className="text-danger ms-1">*</span>
-                                  </label>
-                                  <input type="text" className="form-control" />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="accordion-item border mb-4">
-                  <h2 className="accordion-header" id="headingSpacingThree">
-                    <div
-                      className="accordion-button collapsed bg-white"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#SpacingThree"
-                      aria-expanded="true"
-                      aria-controls="SpacingThree"
-                    >
-                      <div className="d-flex align-items-center justify-content-between flex-fill">
-                        <h5 className="d-flex align-items-center">
-                          <Image
-                            data-feather="image"
-                            className="text-primary me-2"
-                          />
-                          <span>Images</span>
-                        </h5>
-                      </div>
-                    </div>
-                  </h2>
-                  <div
-                    id="SpacingThree"
-                    className="accordion-collapse collapse show"
-                    aria-labelledby="headingSpacingThree"
-                  >
-                    <div className="accordion-body border-top">
-                      <div className="text-editor add-list add">
-                        <div className="col-lg-12">
-                          <div className="add-choosen">
-                            <div className="mb-3">
-                              <div className="image-upload">
-                                <input type="file" />
-                                <div className="image-uploads">
-                                  <PlusCircle
-                                    data-feather="plus-circle"
-                                    className="plus-down-add me-0"
-                                  />
-                                  <h4>Add Images</h4>
-                                </div>
-                              </div>
-                            </div>
-                            {isImageVisible1 && (
-                              <div className="phone-img">
-                                <ImageWithBasePath
-                                  src="assets/img/products/phone-add-2.png"
-                                  alt="image"
-                                />
-                                <Link to="#">
-                                  <X
-                                    className="x-square-add remove-product"
-                                    onClick={handleRemoveProduct1}
-                                  />
-                                </Link>
-                              </div>
-                            )}
-                            {isImageVisible && (
-                              <div className="phone-img">
-                                <ImageWithBasePath
-                                  src="assets/img/products/phone-add-1.png"
-                                  alt="image"
-                                />
-                                <Link to="#">
-                                  <X
-                                    className="x-square-add remove-product"
-                                    onClick={handleRemoveProduct}
-                                  />
-                                </Link>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ProductInfo
+                formData={formData}
+                handleChange={handleChange}
+                generateSKU={generateSKU}
+                dropdowns={dropdowns}
+                setDropdowns={setDropdowns}
+                unit={unit}
+                category={category}
+                isLoading={isLoading}
+              />
+              <PricingStock
+                formData={formData}
+                handleChange={handleChange}
+                options={{ productType, taxType, discountType }}
+                dropdowns={dropdowns}
+                setDropdowns={setDropdowns}
+                isLoading={isLoading}
+              />
+              <ProductImages
+                images={images}
+                setImages={setImages}
+                handleImageChange={(e) =>
+                  handleImageChange({ e, setImages, existingImages: images })
+                }
+                handleRemoveImage={(i) =>
+                  handleRemoveImage({ images, setImages, index: i })
+                }
+                isLoading={isLoading}
+              />
             </div>
             <div className="col-lg-12">
-              <div className="d-flex align-items-center justify-content-end mb-4">
-                <button type="button" className="btn btn-secondary me-2">
+              <div className="d-flex justify-content-end mb-4">
+                <button
+                  type="button"
+                  className="btn btn-secondary me-2"
+                  disabled={isLoading}
+                >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={isLoading}
+                >
                   Add Product
                 </button>
               </div>
             </div>
           </form>
-          {/* /add */}
         </div>
+
         <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
           <p className="mb-0 text-gray-9">
             2014 - 2025 © NXI. All Right Reserved
           </p>
           <p>
-            Designed &amp; Developed by{" "}
+            Designed & Developed by{" "}
             <Link to="#" className="text-primary">
               Xcel Technology
             </Link>

@@ -22,13 +22,13 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = createRoot(rootElement);
   root.render(
-    <React.StrictMode>
+    // <React.StrictMode>
       <Provider store={store}>
         <BrowserRouter basename={base_path}>
           <AllRoutes />
         </BrowserRouter>
       </Provider>
-    </React.StrictMode>
+    // </React.StrictMode>
   );
 } else {
   console.error("Element with id 'root' not found.");
