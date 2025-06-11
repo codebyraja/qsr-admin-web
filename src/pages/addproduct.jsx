@@ -2,26 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "feather-icons-react/build/IconComponents";
 import { toast } from "react-toastify";
+
+// Constants & Utilities
 import { all_routes } from "../Router/all_routes";
 import {
   generateSlug,
   handleImageChange,
   handleRemoveImage,
 } from "../utils/common";
-import RefreshIcon from "../core/common/tooltip-content/refresh";
-import CollapesIcon from "../core/common/tooltip-content/collapes";
-import AddUnits from "../components/modals/addUnit";
-import AddCategorys from "../components/modals/addCategory";
 import { API_BASE_URL } from "../environment";
-import Loader from "../components/loader/loader";
-import ProductInfo from "../components/product/ProductInfo";
-import PricingStock from "../components/product/PricingStock";
-import ProductImages from "../components/product/ProductImages";
 import {
   DISCOUNT_TYPES as discountType,
   PRODUCT_TYPES as productType,
   TAX_TYPES as taxType,
 } from "../constants";
+
+// UI Components
+import Loader from "../components/loader/loader";
+import ProductInfo from "../components/product/ProductInfo";
+import PricingStock from "../components/product/PricingStock";
+import ProductImages from "../components/product/ProductImages";
+import AddUnits from "../components/modals/addUnit";
+import AddCategorys from "../components/modals/addCategory";
+import RefreshIcon from "../core/common/tooltip-content/refresh";
+import CollapesIcon from "../core/common/tooltip-content/collapes";
 
 const defaultFormData = {
   code: 0,
@@ -64,6 +68,7 @@ const AddProduct = () => {
     selectedDiscountType: null,
   });
 
+  // Handlers
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -78,13 +83,26 @@ const AddProduct = () => {
     setFormData((prev) => ({ ...prev, [name]: selectedOption?.value || "" }));
   };
 
+  const handleClear = () => {
+    setFormData(defaultFormData);
+    setDropdowns({
+      selectedCategory: null,
+      selectedUnit: null,
+      selectedProductType: null,
+      selectedTaxType: null,
+      selectedDiscountType: null,
+    });
+    setImages([]);
+  };
+
+  // Data fetching
   const getMasterList = async (type) => {
     try {
       setIsLoading(true);
       const res = await fetch(`${API_BASE_URL}/GetMasterList/${type}`);
-      const result = await res.json();
-      if (type === 5) setCategory(result?.data);
-      if (type === 8) setUnit(result?.data);
+      const { data } = await res.json();
+      if (type === 5) setCategory(data);
+      if (type === 8) setUnit(data);
     } catch {
       toast.error("Failed to fetch master list");
     } finally {
@@ -105,24 +123,13 @@ const AddProduct = () => {
     }
   };
 
-  const handleClear = () => {
-    setFormData(defaultFormData);
-    setDropdowns({
-      selectedCategory: null,
-      selectedUnit: null,
-      selectedProductType: null,
-      selectedTaxType: null,
-      selectedDiscountType: null,
-    });
-    setImages([]);
-  };
-
   const appendFormData = () => {
     const fd = new FormData();
-    const getLabel = (key) => dropdowns[key]?.label || "";
-    const getValue = (key) => dropdowns[key]?.value || 0;
 
-    const entries = {
+    const getValue = (key) => dropdowns[key]?.value || 0;
+    const getLabel = (key) => dropdowns[key]?.label || "";
+
+    const fields = {
       Code: formData.code,
       Name: formData.productName,
       PrintName: formData.productName,
@@ -146,7 +153,7 @@ const AddProduct = () => {
       Users: formData.users,
     };
 
-    Object.entries(entries).forEach(([key, val]) => {
+    Object.entries(fields).forEach(([key, val]) => {
       fd.append(key, val ?? "");
     });
 
@@ -160,21 +167,24 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) return;
+
     setIsLoading(true);
     try {
-      const formDatadt = appendFormData();
-      const response = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
+      const formPayload = appendFormData();
+      const response = await fetch(`${API_BASE_URL}/SaveProductMasterDetails`, {
         method: "POST",
-        body: formDatadt,
+        body: formPayload,
       });
 
       const result = await response.json();
-      console.log("result", result);
-      result?.status === 1 ? handleClear() : null;
-      toast[result?.status === 1 ? "success" : "error"](
-        generateSKU(),
-        result?.msg || "Something went wrong"
-      );
+
+      if (result?.status === 1) {
+        handleClear();
+        toast.success(result.msg || "Product added successfully");
+        generateSKU();
+      } else {
+        toast.error(result.msg || "Something went wrong");
+      }
     } catch (error) {
       toast.error("Failed to add product.");
     } finally {
@@ -183,9 +193,9 @@ const AddProduct = () => {
   };
 
   useEffect(() => {
-    getMasterList(5); // Category
-    getMasterList(8); // Unit
-    generateSKU();
+    getMasterList(5); // Fetch categories
+    getMasterList(8); // Fetch units
+    generateSKU(); // Generate initial SKU
   }, []);
 
   return (
@@ -225,6 +235,7 @@ const AddProduct = () => {
                 category={category}
                 isLoading={isLoading}
               />
+
               <PricingStock
                 formData={formData}
                 handleChange={handleChange}
@@ -233,24 +244,27 @@ const AddProduct = () => {
                 setDropdowns={setDropdowns}
                 isLoading={isLoading}
               />
+
               <ProductImages
                 images={images}
                 setImages={setImages}
                 handleImageChange={(e) =>
                   handleImageChange({ e, setImages, existingImages: images })
                 }
-                handleRemoveImage={(i) =>
-                  handleRemoveImage({ images, setImages, index: i })
+                handleRemoveImage={(index) =>
+                  handleRemoveImage({ images, setImages, index })
                 }
                 isLoading={isLoading}
               />
             </div>
+
             <div className="col-lg-12">
               <div className="d-flex justify-content-end mb-4">
                 <button
                   type="button"
                   className="btn btn-secondary me-2"
                   disabled={isLoading}
+                  onClick={handleClear}
                 >
                   Cancel
                 </button>
@@ -278,6 +292,7 @@ const AddProduct = () => {
           </p>
         </div>
       </div>
+
       <AddUnits />
       <AddCategorys />
     </>

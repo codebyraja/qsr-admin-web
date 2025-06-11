@@ -101,24 +101,6 @@ const Products = () => {
     },
   ];
 
-  const products = [
-    { value: "Bold V3.2", label: "Bold V3.2" },
-    { value: "Nike Jordan", label: "Nike Jordan" },
-    { value: "Iphone 14 Pro", label: "Iphone 14 Pro" },
-  ];
-
-  const Category = [
-    { value: "Laptop", label: "Laptop" },
-    { value: "Electronics", label: "Electronics" },
-    { value: "Shoe", label: "Shoe" },
-  ];
-
-  const SubCategory = [
-    { value: "Lenovo", label: "Lenovo" },
-    { value: "Bolt", label: "Bolt" },
-    { value: "Nike", label: "Nike" },
-  ];
-
   return (
     <div>
       <div className="page-wrapper">
@@ -157,7 +139,7 @@ const Products = () => {
           <div className="card table-list-card">
             <div className="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3">
               <div className="search-set"></div>
-              <div className="d-flex table-dropdown my-xl-auto right-content align-items-center flex-wrap row-gap-3">
+              {/* <div className="d-flex table-dropdown my-xl-auto right-content align-items-center flex-wrap row-gap-3">
                 <div className="dropdown me-2">
                   <Link
                     to="#"
@@ -318,7 +300,7 @@ const Products = () => {
                     </li>
                   </ul>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="card-body">
               <div className=" table-responsive">
@@ -330,7 +312,6 @@ const Products = () => {
         </div>
         <CommonFooter />
       </div>
-
     </div>
   );
 };
