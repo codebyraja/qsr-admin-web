@@ -8,8 +8,6 @@ import ImageWithBasePath from "../../core/img/imagewithbasebath";
 import { Link } from "react-router-dom";
 import CommonFooter from "../../core/common/footer/commonFooter";
 import { Download, Eye } from "feather-icons-react/build/IconComponents";
-import TextEditor from "../inventory/texteditor";
-import Select from "react-select";
 import { all_routes } from "../../Router/all_routes";
 
 const Products = () => {
