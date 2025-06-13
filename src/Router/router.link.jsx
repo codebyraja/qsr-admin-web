@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Navigate } from "react-router-dom";
-import ProductList from "../feature-module/inventory/productlist";
+import ProductList from "../pages/productlist";
+// import ProductList from "../feature-module/inventory/productlist";
 import Dashboard from "../feature-module/dashboard/Dashboard";
 // import AddProduct from "../feature-module/inventory/addproduct";
 // import { Units } from "../feature-module/inventory/units";
@@ -285,6 +286,7 @@ import Faq from "../feature-module/content/faq";
 import Activities from "../feature-module/pages/activities";
 import Pricing from "../feature-module/pages/pricing";
 import Contacts from "../feature-module/Application/contacts";
+
 export const publicRoutes = [
   {
     id: 1,

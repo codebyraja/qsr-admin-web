@@ -1,19 +1,23 @@
-import React from 'react';
-import { image_path } from '../../environment';
+import React from "react";
+import { image_path } from "../../environment";
+const defaultAvatar = "/assets/img/avatar/avatar-1.jpg";
 
 interface Image {
   className?: string;
-  src: string;
+  src?: string; // Make it optional, since fallback is used
   alt?: string;
   height?: number;
   width?: number;
-  id?:string;
+  id?: string;
 }
 
 const ImageWithBasePath = (props: Image) => {
-  // Combine the base path and the provided src to create the full image source URL
-  const altText = String(props.alt);
-  const fullSrc = `${image_path}${props.src}`;
+  const altText = props.alt || "image";
+
+  // Use image_path if needed, or fallback to defaultAvatar
+  // const fullSrc = props.src ? `${image_path}${props.src}` : defaultAvatar;
+  const fullSrc = props.src ? props?.src : defaultAvatar;
+
   return (
     <img
       className={props.className}
