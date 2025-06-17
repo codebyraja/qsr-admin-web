@@ -1,89 +1,112 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { RotateCcw, ChevronUp, Download } from "react-feather";
 import { Table } from "antd";
+import { toast } from "react-toastify";
 
 import TooltipIcon from "../components/TooltipIcon";
 import TableColumnImageText from "../components/TableColumnImageText";
 import ProductActionButtons from "../components/ProductActionButtons";
-
 import ImageWithBasePath from "../core/img/imagewithbasebath";
+import Loader from "../components/loader/loader";
+
 import { all_routes } from "../Router/all_routes";
 import { setToogleHeader } from "../core/redux/action";
-import { toast } from "react-toastify";
-import Loader from "../components/loader/loader";
 import { API_BASE_URL } from "../environment";
+import { useNavigate } from "react-router-dom";
 
 const ProductList = () => {
   const dispatch = useDispatch();
-  // const dataSource = useSelector((state) => state.rootReducer.product_list);
   const isHeaderCollapsed = useSelector(
     (state) => state.rootReducer.toggle_header
   );
+
   const route = all_routes;
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [tableData, setTableData] = useState([]);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  // const [mode, setMode] = useState(""); // Uncomment if using modal mode
+
   const handleCollapseToggle = (e) => {
     e.preventDefault();
     dispatch(setToogleHeader(!isHeaderCollapsed));
   };
 
-  const handleDelete = () => {};
+  const handleEditClick = (record) => {
+    // setMode("modify");
+    setSelectedRecord(record);
+    navigate(route.addproduct, { state: { product: record } });
+  };
+
+  const handleViewClick = (record) => {
+    setSelectedRecord(record);
+    navigate(route.productdetails, { state: { product: record } });
+  };
+
+  const handleDeleteClick = (record) => {
+    // setMode("delete");
+    setSelectedRecord(record);
+    // Open your delete confirmation modal here
+  };
+
+  const handleDelete = () => {
+    // actual delete logic goes here
+  };
 
   const columns = [
     {
       title: "SKU",
       dataIndex: "sku",
-      sorter: (a, b) => a.sku.length - b.sku.length,
+      sorter: (a, b) => a.sku.localeCompare(b.sku),
     },
     {
       title: "Product",
       dataIndex: "product",
       render: (_, record) => (
-        console.log(record),
-        (
-          <TableColumnImageText
-            imageSrc={record?.productImage}
-            text={record?.product}
-          />
-        )
+        <TableColumnImageText
+          imageSrc={record?.productImage}
+          text={record?.product}
+        />
       ),
-      sorter: (a, b) => a.product.length - b.product.length,
+      sorter: (a, b) => a.product.localeCompare(b.product),
     },
     {
       title: "Category",
       dataIndex: "category",
-      sorter: (a, b) => a.category.length - b.category.length,
+      sorter: (a, b) => a.category.localeCompare(b.category),
     },
     {
       title: "Unit",
       dataIndex: "unit",
-      sorter: (a, b) => a.unit.length - b.unit.length,
+      sorter: (a, b) => a.unit.localeCompare(b.unit),
     },
     {
       title: "Price",
       dataIndex: "price",
-      sorter: (a, b) => a.price.length - b.price.length,
+      sorter: (a, b) => a.price - b.price,
     },
     {
       title: "Qty",
       dataIndex: "qty",
-      sorter: (a, b) => a.qty.length - b.qty.length,
+      sorter: (a, b) => a.qty - b.qty,
     },
-    { title: "Created By", dataIndex: "createdby" },
+    {
+      title: "Created By",
+      dataIndex: "createdby",
+    },
     {
       title: "Action",
       dataIndex: "action",
       render: (_, item) => (
         <ProductActionButtons
-          viewLink={route.productdetails}
-          editLink={route.editproduct}
-          onDelete={() => handleDelete(item)}
+          handleViewClick={() => handleViewClick(item)}
+          handleEditClick={() => handleEditClick(item)}
+          handleDeleteClick={() => handleDeleteClick(item)}
           deleteModalId="delete-product-modal"
         />
       ),
-      sorter: (a, b) => a.createdby.length - b.createdby.length,
     },
   ];
 
@@ -92,24 +115,22 @@ const ProductList = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/GetProductMasterDetails/6`);
       const result = await response.json();
-      console.log("result", result);
-      // console.log("product?.ImagePaths[0]", result.data?.imagePaths[0]);
-
-      const tabled = result?.data?.map((product) => ({
-        key: product.code,
-        sku: product.sku,
-        product: product.name,
-        category: product.parentGrpName,
-        unit: product.unitName,
-        price: product.price,
-        qty: product.qty,
-        createdby: product.users,
-        // productImage: product?.imagePaths[0],
-        productImage: product?.imagePaths?.[0] ?? "", // ✅ correct image assigned
+      // console.log("result", result);
+      const formattedData = result?.data?.map((product, index) => ({
+        key: index,
+        code: product?.code,
+        product: product?.name,
+        sku: product?.sku,
+        category: product?.parentGrpName,
+        unit: product?.unitName,
+        price: product?.price,
+        qty: product?.qty,
+        createdby: product?.users,
+        productImage: product?.imageList[0]?.filePath ?? "",
       }));
-      setTableData(tabled);
+      setTableData(formattedData || []);
     } catch (ex) {
-      toast.error(ex?.msg);
+      toast.error(ex?.message || "Failed to fetch product data");
     } finally {
       setIsLoading(false);
     }

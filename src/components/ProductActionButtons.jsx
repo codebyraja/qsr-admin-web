@@ -3,25 +3,39 @@ import { Link } from "react-router-dom";
 import { Eye, Edit, Trash2 } from "react-feather";
 
 interface Props {
-  viewLink: string;
-  editLink: string;
-  onDelete: () => void;
+  handleViewClick: () => void;
+  handleEditClick: () => void;
+  handleDeleteClick: () => void;
   deleteModalId?: string;
 }
 
 const ProductActionButtons: React.FC<Props> = ({
-  viewLink,
-  editLink,
-  onDelete,
+  handleViewClick,
+  handleEditClick,
+  handleDeleteClick,
   deleteModalId = "delete-modal",
 }) => {
   return (
     <div className="action-table-data">
       <div className="edit-delete-action">
-        <Link to={viewLink} className="me-2 p-2">
+        <Link
+          to="#"
+          className="me-2 p-2"
+          onClick={(e) => {
+            e.preventDefault();
+            handleViewClick();
+          }}
+        >
           <Eye className="feather-view" />
         </Link>
-        <Link to={editLink} className="me-2 p-2">
+        <Link
+          to="#"
+          className="me-2 p-2"
+          onClick={(e) => {
+            e.preventDefault();
+            handleEditClick();
+          }}
+        >
           <Edit className="feather-edit" />
         </Link>
         <Link
@@ -29,7 +43,10 @@ const ProductActionButtons: React.FC<Props> = ({
           className="confirm-text p-2"
           data-bs-toggle="modal"
           data-bs-target={`#${deleteModalId}`}
-          onClick={onDelete}
+          onClick={(e) => {
+            e.preventDefault();
+            handleDeleteClick();
+          }}
         >
           <Trash2 className="feather-trash-2" />
         </Link>

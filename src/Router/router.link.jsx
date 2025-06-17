@@ -6,6 +6,7 @@ import Dashboard from "../feature-module/dashboard/Dashboard";
 // import AddProduct from "../feature-module/inventory/addproduct";
 // import { Units } from "../feature-module/inventory/units";
 // import CategoryList from "../feature-module/inventory/categorylist";
+// import ProductDetail from "../feature-module/inventory/productdetail";
 import SubCategories from "../feature-module/inventory/subcategories";
 import EditProduct from "../feature-module/inventory/editproduct";
 
@@ -191,7 +192,6 @@ import AddEmployee from "../feature-module/hrm/addemployee";
 import LeavesAdmin from "../feature-module/hrm/leavesadmin";
 import LeavesEmployee from "../feature-module/hrm/leavesemployee";
 import LeaveTypes from "../feature-module/hrm/leavetypes";
-import ProductDetail from "../feature-module/inventory/productdetail";
 
 import TaxRates from "../feature-module/settings/financialsettings/taxrates";
 import CurrencySettings from "../feature-module/settings/financialsettings/currencysettings";
@@ -286,6 +286,7 @@ import Faq from "../feature-module/content/faq";
 import Activities from "../feature-module/pages/activities";
 import Pricing from "../feature-module/pages/pricing";
 import Contacts from "../feature-module/Application/contacts";
+import ProductDetail from "../pages/productdetail";
 
 export const publicRoutes = [
   {

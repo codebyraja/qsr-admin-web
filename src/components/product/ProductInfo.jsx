@@ -15,8 +15,6 @@ const ProductInfo = ({
   category,
   isLoading,
 }) => {
-  console.log("Unit options:", unit);
-  console.log("Category options:", category);
   return (
     <div className="accordion-item border mb-4">
       <h2 className="accordion-header" id="headingSpacingOne">

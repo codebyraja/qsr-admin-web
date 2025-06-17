@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "feather-icons-react/build/IconComponents";
 import { toast } from "react-toastify";
 
@@ -26,6 +26,7 @@ import AddUnits from "../components/modals/addUnit";
 import AddCategorys from "../components/modals/addCategory";
 import RefreshIcon from "../core/common/tooltip-content/refresh";
 import CollapesIcon from "../core/common/tooltip-content/collapes";
+import { useDropdownState } from "../utils/useDropdownState";
 
 const defaultFormData = {
   code: 0,
@@ -53,14 +54,24 @@ const defaultFormData = {
 };
 
 const AddProduct = () => {
-  const route = all_routes;
+  const { productlist } = all_routes;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const product = location?.state?.product;
 
   const [formData, setFormData] = useState(defaultFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [category, setCategory] = useState([]);
   const [unit, setUnit] = useState([]);
   const [images, setImages] = useState([]);
-  const [dropdowns, setDropdowns] = useState({
+
+  const {
+    dropdowns,
+    setDropdowns,
+    getValue,
+    getLabel,
+    clear: clearDropdowns,
+  } = useDropdownState({
     selectedCategory: null,
     selectedUnit: null,
     selectedProductType: null,
@@ -68,7 +79,103 @@ const AddProduct = () => {
     selectedDiscountType: null,
   });
 
-  // Handlers
+  // Initialize Form from Passed Product (for edit/view mode)
+  useEffect(() => {
+    if (product) {
+      const getProductDetails = async () => {
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/GetProductMasterDetails/6?code=${product?.code}`
+          );
+          const result = await response.json();
+          console.log("result", result);
+          const formattedProduct = {
+            ...defaultFormData,
+            code: result?.data[0]?.code,
+            productName: result?.data[0]?.name,
+            printName: result?.data[0]?.printName,
+            productSlug: result?.data[0]?.slug ?? generateSlug(formData?.name),
+            sku: result?.data[0]?.sku,
+            qty: result?.data[0]?.qty,
+            minQty: result?.data[0]?.minQty,
+            price: result?.data[0]?.price,
+            discount: result?.data[0]?.discount,
+            description: result?.data[0]?.description,
+            isActive: result?.data[0]?.isActive,
+            images: result?.data[0]?.imagePaths || [],
+          };
+          setDropdowns({
+            selectedCategory: {
+              value: result?.data[0]?.parentGrp,
+              label: result?.data[0]?.parentGrpName,
+            },
+            selectedUnit: {
+              value: result?.data[0]?.unit,
+              label: result?.data[0]?.unitName,
+            },
+            selectedProductType: {
+              value: result?.data[0]?.productType,
+              label: result?.data[0]?.productTypeName,
+            },
+            selectedTaxType: {
+              value: result?.data[0]?.taxType,
+              label: result?.data[0]?.taxTypeName,
+            },
+            selectedDiscountType: {
+              value: result?.data[0]?.discountType,
+              label: result?.data[0]?.discountTypeName,
+            },
+          });
+          setFormData(formattedProduct);
+          setImages(
+            result?.data[0]?.imageList.map((url, index) => ({
+              file: {
+                name: url?.fileName,
+                size: url?.fileSize,
+                type: url?.fileType,
+                webkitRelativePath: url?.filePath,
+              },
+              preview: url?.filePath,
+              id: index,
+            }))
+          );
+          setImages(
+            result?.data[0]?.imageList.map((url, index) => ({
+              file: null, // not a real file
+              preview: url?.filePath,
+              id: index,
+              isExisting: true,
+            }))
+          );
+
+          // setImages(
+          //   result?.data[0]?.imageList.map((url, index) => ({
+          //     file: {
+          //       name: url?.fileName,
+          //       size: url?.fileSize,
+          //       type: url?.fileType,
+          //       webkitRelativePath: url?.filePath, // optional
+          //     },
+          //     preview: url?.filePath,
+          //     id: index,
+          //   }))
+          // );
+        } catch (ex) {
+          toast.error(ex);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      getProductDetails();
+    }
+  }, [product]);
+
+  useEffect(() => {
+    getselectList(5); // Categories
+    getselectList(8); // Units
+    if (!product) generateSKU(); // Generate SKU only for new products
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -79,28 +186,22 @@ const AddProduct = () => {
   };
 
   const handleDropdownChange = (name, selectedOption) => {
-    setDropdowns((prev) => ({ ...prev, [name]: selectedOption }));
-    setFormData((prev) => ({ ...prev, [name]: selectedOption?.value || "" }));
+    const value = setDropdowns(name, selectedOption);
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleClear = () => {
+    navigate(-1);
     setFormData(defaultFormData);
-    setDropdowns({
-      selectedCategory: null,
-      selectedUnit: null,
-      selectedProductType: null,
-      selectedTaxType: null,
-      selectedDiscountType: null,
-    });
+    clearDropdowns();
     setImages([]);
   };
 
-  // Data fetching
-  const getMasterList = async (type) => {
+  const getselectList = async (type) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const res = await fetch(`${API_BASE_URL}/GetMasterList/${type}`);
-      const { data } = await res.json();
+      const response = await fetch(`${API_BASE_URL}/GetMasterList/${type}`);
+      const { data } = await response.json();
       if (type === 5) setCategory(data);
       if (type === 8) setUnit(data);
     } catch {
@@ -111,23 +212,24 @@ const AddProduct = () => {
   };
 
   const generateSKU = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const res = await fetch(`${API_BASE_URL}/GenerateSku/generate-sku`);
       const { sku } = await res.json();
       setFormData((prev) => ({ ...prev, sku }));
     } catch {
-      console.error("Failed to generate SKU");
+      toast.error("Failed to generate SKU");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const appendFormData = () => {
-    const fd = new FormData();
+  console.log("ram images", images);
 
-    const getValue = (key) => dropdowns[key]?.value || 0;
-    const getLabel = (key) => dropdowns[key]?.label || "";
+  const appendFormData = () => {
+    console.log("ram images2", images);
+
+    const fd = new FormData();
 
     const fields = {
       Code: formData.code,
@@ -157,8 +259,18 @@ const AddProduct = () => {
       fd.append(key, val ?? "");
     });
 
+    // images.forEach((img) => {
+    //   if (img.file) {
+    //     fd.append("Images", img.file);
+    //   }
+    // });
+
     images.forEach((img) => {
-      fd.append("images", img.file);
+      if (img?.file instanceof File) {
+        fd.append("Images", img.file);
+      } else if (img.preview) {
+        fd.append("ExistingImagePaths", img.preview); // if backend supports this
+      }
     });
 
     return fd;
@@ -171,6 +283,11 @@ const AddProduct = () => {
     setIsLoading(true);
     try {
       const formPayload = appendFormData();
+
+      // for (let pair of formPayload.entries()) {
+      //   console.log(`${pair[0]}:`, pair[1]);
+      // }
+
       const response = await fetch(`${API_BASE_URL}/SaveProductMasterDetails`, {
         method: "POST",
         body: formPayload,
@@ -192,12 +309,6 @@ const AddProduct = () => {
     }
   };
 
-  useEffect(() => {
-    getMasterList(5); // Fetch categories
-    getMasterList(8); // Fetch units
-    generateSKU(); // Generate initial SKU
-  }, []);
-
   return (
     <>
       {isLoading && <Loader />}
@@ -206,8 +317,10 @@ const AddProduct = () => {
           <div className="page-header">
             <div className="add-item d-flex">
               <div className="page-title">
-                <h4>Create Product</h4>
-                <h6>Create new product</h6>
+                <h4>{product ? "Edit Product" : "Create Product"}</h4>
+                <h6>
+                  {product ? "Edit existing product" : "Create new product"}
+                </h6>
               </div>
             </div>
             <ul className="table-top-head">
@@ -215,7 +328,7 @@ const AddProduct = () => {
               <CollapesIcon />
               <li>
                 <div className="page-btn">
-                  <Link to={route.productlist} className="btn btn-secondary">
+                  <Link to={productlist} className="btn btn-secondary">
                     <ArrowLeft className="me-2" /> Back to Product
                   </Link>
                 </div>
@@ -273,7 +386,7 @@ const AddProduct = () => {
                   className="btn btn-primary"
                   disabled={isLoading}
                 >
-                  Add Product
+                  {product ? "Update Product" : "Add Product"}
                 </button>
               </div>
             </div>
