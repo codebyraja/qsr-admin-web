@@ -127,39 +127,20 @@ const AddProduct = () => {
             },
           });
           setFormData(formattedProduct);
-          setImages(
-            result?.data[0]?.imageList.map((url, index) => ({
-              file: {
-                name: url?.fileName,
-                size: url?.fileSize,
-                type: url?.fileType,
-                webkitRelativePath: url?.filePath,
-              },
-              preview: url?.filePath,
-              id: index,
-            }))
-          );
-          setImages(
-            result?.data[0]?.imageList.map((url, index) => ({
-              file: null, // not a real file
-              preview: url?.filePath,
-              id: index,
-              isExisting: true,
-            }))
-          );
 
-          // setImages(
-          //   result?.data[0]?.imageList.map((url, index) => ({
-          //     file: {
-          //       name: url?.fileName,
-          //       size: url?.fileSize,
-          //       type: url?.fileType,
-          //       webkitRelativePath: url?.filePath, // optional
-          //     },
-          //     preview: url?.filePath,
-          //     id: index,
-          //   }))
-          // );
+          setFormData(formattedProduct);
+
+          // ✅ Set images using preview + dummy file
+          const imageObjs = result?.data[0]?.imageList.map((img, index) => ({
+            file: new File([""], img.fileName, {
+              type: img.fileType,
+            }),
+            preview: img.filePath,
+            id: index,
+            isExisting: true, // mark it so backend keeps it
+          }));
+
+          setImages(imageObjs);
         } catch (ex) {
           toast.error(ex);
         } finally {
@@ -169,6 +150,35 @@ const AddProduct = () => {
       getProductDetails();
     }
   }, [product]);
+
+  useEffect(() => {
+    async function prepareImages() {
+      if (product) {
+        const fileList = [];
+
+        for (const image of images) {
+          try {
+            const file = await urlToFile(image.url, image.name, image.type);
+            fileList.push(file);
+          } catch (error) {
+            console.error("Failed to load image:", image.url, error);
+          }
+        }
+
+        setImages(fileList); // File[] list set in state
+      }
+    }
+
+    prepareImages();
+  }, [product]);
+
+  console.log("imgggggggggggggggg", images);
+
+  async function urlToFile(url, filename, mimeType) {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new File([blob], filename, { type: mimeType });
+  }
 
   useEffect(() => {
     getselectList(5); // Categories
@@ -265,13 +275,23 @@ const AddProduct = () => {
     //   }
     // });
 
+    // Append only actual image files
     images.forEach((img) => {
       if (img?.file instanceof File) {
         fd.append("Images", img.file);
-      } else if (img.preview) {
-        fd.append("ExistingImagePaths", img.preview); // if backend supports this
       }
     });
+
+    // ✅ Append existing image paths as array
+    const existingImagePaths = images
+      .filter((img) => img?.isExisting && img.preview)
+      .map((img) => img.preview);
+
+    if (existingImagePaths.length > 0) {
+      existingImagePaths.forEach((path) => {
+        fd.append("ExistingImagePaths", path);
+      });
+    }
 
     return fd;
   };
@@ -284,9 +304,9 @@ const AddProduct = () => {
     try {
       const formPayload = appendFormData();
 
-      // for (let pair of formPayload.entries()) {
-      //   console.log(`${pair[0]}:`, pair[1]);
-      // }
+      for (let pair of formPayload.entries()) {
+        console.log("ramji", `${pair[0]}:`, pair[1]);
+      }
 
       const response = await fetch(`${API_BASE_URL}/SaveProductMasterDetails`, {
         method: "POST",
