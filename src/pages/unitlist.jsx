@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import CommonTableHeader from "../core/common/table/tableHeader";
 import TableTopFilter from "../core/common/table/tableTopFilter";
@@ -9,127 +9,72 @@ import CommonDeleteModal from "../core/common/modal/commonDeleteModal";
 import AddUnits from "../components/modals/addUnit";
 import { API_BASE_URL } from "../environment";
 import { toast } from "react-toastify";
-import { generateColumns } from "../utils/generateColumns";
-import { unitColumn } from "../utils/tableColumns";
 import Loader from "../components/loader/loader";
+import ProductActionButtons from "../components/ProductActionButtons";
+import { all_routes } from "../Router/all_routes";
 
 const UnitList = () => {
-  const dataSource = useSelector(
-    (state) => state.rootReducer.categotylist_data
-  );
+  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const navigate = useNavigate();
+  const route = all_routes;
+
+  const handleEditClick = (record) => {
+    // setMode("modify");
+    setSelectedRecord(record);
+    navigate(route.addproduct, { state: { product: record } });
+  };
+
+  const handleDeleteClick = (record) => {
+    // setMode("delete");
+    setSelectedRecord(record);
+    // Open your delete confirmation modal here
+  };
 
   const columns = [
     {
       title: "Category",
-      dataIndex: "category",
-      sorter: (a, b) => a.category.length - b.category.length,
+      dataIndex: "name",
+      rener: (_, item) => {
+        <div className="d-flex align-items-center">
+          <span>{item}</span>
+        </div>;
+      },
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-      title: "Category Slug",
-      dataIndex: "categoryslug",
-      sorter: (a, b) => a.categoryslug.length - b.categoryslug.length,
+      title: "Print Name",
+      dataIndex: "printName",
+      sorter: (a, b) => a.printName.localeCompare(b.printName),
     },
     {
-      title: "Created On",
-      dataIndex: "createdon",
-      sorter: (a, b) => a.createdon.length - b.createdon.length,
+      title: "Creation By",
+      dataIndex: "creationBy",
+      sorter: (a, b) => new Date(a.creationBy) - new Date(b.creationBy),
+    },
+    {
+      title: "Creation Time",
+      dataIndex: "creationTime",
+      sorter: (a, b) => new Date(a.creationTime) - new Date(b.creationTime),
     },
     {
       title: "Status",
       dataIndex: "status",
-      render: (text) => (
-        <span className="badge bg-success fw-medium fs-10">{text}</span>
+      render: (_, item) => (
+        <ProductActionButtons
+          handleEditClick={() => handleEditClick(item)}
+          handleDeleteClick={() => handleDeleteClick(item)}
+          deleteModalId="delete-product-modal"
+          showView={false}
+        />
       ),
-      sorter: (a, b) => a.status.length - b.status.length,
     },
     {
-      title: "",
-      dataIndex: "actions",
-      key: "actions",
-      render: () => (
-        <div className="action-table-data">
-          <div className="edit-delete-action">
-            <Link
-              className="me-2 p-2"
-              to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#edit-category"
-            >
-              <i data-feather="edit" className="feather-edit"></i>
-            </Link>
-            <Link
-              data-bs-toggle="modal"
-              data-bs-target="#delete-modal"
-              className="p-2"
-              to="#"
-            >
-              <i data-feather="trash-2" className="feather-trash-2"></i>
-            </Link>
-          </div>
-        </div>
-      ),
+      type: "actions",
+      actions: ["edit", "delete"],
     },
   ];
-
-  const openModal = () => {
-    // Logic to open modal can be added here
-    // For example, you can dispatch an action or set a state to trigger the modal
-  };
-  const [tableData, setTableData] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  // const columns = [
-  //   {
-  //     title: "Category",
-  //     dataIndex: "name",
-  //     sorter: (a, b) => a.name.length - b.name.length,
-  //   },
-  //   {
-  //     title: "Print Name",
-  //     dataIndex: "printName", // ✅ corrected
-  //     sorter: (a, b) => a.printName.length - b.printName.length,
-  //   },
-  //   {
-  //     title: "Created On",
-  //     dataIndex: "createdOn", // ✅ corrected
-  //     sorter: (a, b) => a.createdOn.length - b.createdOn.length,
-  //   },
-  //   {
-  //     title: "Status",
-  //     dataIndex: "status",
-  //     render: (text) => (
-  //       <span className="badge bg-success fw-medium fs-10">{text}</span>
-  //     ),
-  //     sorter: (a, b) => a.status.length - b.status.length,
-  //   },
-  //   {
-  //     title: "Actions",
-  //     dataIndex: "actions",
-  //     key: "actions",
-  //     render: () => (
-  //       <div className="action-table-data">
-  //         <div className="edit-delete-action">
-  //           <Link
-  //             className="me-2 p-2"
-  //             to="#"
-  //             data-bs-toggle="modal"
-  //             data-bs-target="#edit-category"
-  //           >
-  //             <i data-feather="edit" className="feather-edit"></i>
-  //           </Link>
-  //           <Link
-  //             data-bs-toggle="modal"
-  //             data-bs-target="#delete-modal"
-  //             className="p-2"
-  //             to="#"
-  //           >
-  //             <i data-feather="trash-2" className="feather-trash-2"></i>
-  //           </Link>
-  //         </div>
-  //       </div>
-  //     ),
-  //   },
-  // ];
 
   useEffect(() => {
     fetchCategories();
@@ -151,8 +96,9 @@ const UnitList = () => {
         id: item.code,
         name: item.name || "Unnamed",
         printName: item.printName ?? "N/A",
-        createdOn: item.createdOn ?? "N/A",
         status: item.isActive ? "Active" : "Inactive",
+        creationBy: item.users ?? "N/A",
+        creationTime: item.creationTime ?? "N/A",
       }));
 
       setTableData(unit);
@@ -161,6 +107,11 @@ const UnitList = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const openModal = () => {
+    // Logic to open modal can be added here
+    // For example, you can dispatch an action or set a state to trigger the modal
   };
 
   return (
@@ -175,10 +126,7 @@ const UnitList = () => {
           />
           <div className="card table-list-card">
             <TableTopFilter />
-            <CommonTable
-              columns={generateColumns(unitColumn)}
-              data={tableData}
-            />
+            <CommonTable columns={columns} data={tableData} />
           </div>
         </div>
         <CommonFooter />

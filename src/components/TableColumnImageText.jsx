@@ -6,9 +6,8 @@ const TableColumnImageText = ({ imageSrc, text }) => (
   <div className="d-flex align-items-center">
     <Link to="#" className="avatar avatar-md me-2">
       <ImageWithBasePath alt={text} src={imageSrc} />
-      
     </Link>
-    <Link to="#">{text}</Link>
+    <a>{text}</a>
   </div>
 );
 

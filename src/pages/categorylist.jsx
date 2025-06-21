@@ -13,65 +13,69 @@ import { categoryColumn } from "../utils/tableColumns";
 import ApiService from "../services/api";
 import Loader from "../components/loader/loader";
 import { API_BASE_URL } from "../environment";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Datatable from "../core/pagination/datatable";
+import ProductActionButtons from "../components/ProductActionButtons";
+import { all_routes } from "../Router/all_routes";
 
 const CategoryList = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const navigate = useNavigate();
+  const route = all_routes;
 
   const columns = [
     {
       title: "Category",
       dataIndex: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
+      sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
       title: "Print Name",
-      dataIndex: "printName", // ✅ corrected
-      sorter: (a, b) => a.printName.length - b.printName.length,
+      dataIndex: "printName",
+      sorter: (a, b) => a.printName.localeCompare(b.printName),
     },
     {
-      title: "Created On",
-      dataIndex: "createdOn", // ✅ corrected
-      sorter: (a, b) => a.createdOn.length - b.createdOn.length,
+      title: "Creation By",
+      dataIndex: "creationBy",
+      sorter: (a, b) => new Date(a.creationBy) - new Date(b.creationBy),
+    },
+    {
+      title: "Creation Time",
+      dataIndex: "creationTime",
+      sorter: (a, b) => new Date(a.creationTime) - new Date(b.creationTime),
     },
     {
       title: "Status",
       dataIndex: "status",
-      render: (text) => (
-        <span className="badge bg-success fw-medium fs-10">{text}</span>
+      render: (_, item) => (
+        <ProductActionButtons
+          handleEditClick={() => handleEditClick(item)}
+          handleDeleteClick={() => handleDeleteClick(item)}
+          deleteModalId="delete-product-modal"
+          showView={false}
+        />
       ),
-      sorter: (a, b) => a.status.length - b.status.length,
     },
     {
-      title: "Actions",
-      dataIndex: "actions",
-      key: "actions",
-      render: () => (
-        <div className="action-table-data">
-          <div className="edit-delete-action">
-            <Link
-              className="me-2 p-2"
-              to="#"
-              data-bs-toggle="modal"
-              data-bs-target="#edit-category"
-            >
-              <i data-feather="edit" className="feather-edit"></i>
-            </Link>
-            <Link
-              data-bs-toggle="modal"
-              data-bs-target="#delete-modal"
-              className="p-2"
-              to="#"
-            >
-              <i data-feather="trash-2" className="feather-trash-2"></i>
-            </Link>
-          </div>
-        </div>
-      ),
+      type: "actions",
+      actions: ["edit", "delete"],
     },
   ];
+
+  const handleEditClick = (record) => {
+    // setMode("modify");
+    setSelectedRecord(record);
+    navigate(route.addproduct, { state: { product: record } });
+  };
+
+  const handleDeleteClick = (record) => {
+    // setMode("delete");
+    setSelectedRecord(record);
+    // Open your delete confirmation modal here
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -95,6 +99,8 @@ const CategoryList = () => {
         printName: item.printName ?? "N/A",
         createdOn: item.createdOn ?? "N/A",
         status: item.isActive ? "Active" : "Inactive",
+        creationBy: item.users ?? "N/A",
+        creationTime: item.creationTime ?? "N/A",
       }));
 
       setTableData(categories);
@@ -113,11 +119,7 @@ const CategoryList = () => {
           <CommonTableHeader title="Category" modalId="add-categorys" />
           <div className="card table-list-card">
             <TableTopFilter />
-            <CommonTable
-              columns={generateColumns(categoryColumn)}
-              data={tableData}
-              loading={loading}
-            />
+            <CommonTable columns={columns} data={tableData} loading={loading} />
           </div>
         </div>
         {/* <CommonFooter /> */}

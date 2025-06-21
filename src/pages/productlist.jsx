@@ -27,7 +27,6 @@ const ProductList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  // const [mode, setMode] = useState(""); // Uncomment if using modal mode
 
   const handleCollapseToggle = (e) => {
     e.preventDefault();
@@ -93,8 +92,12 @@ const ProductList = () => {
       sorter: (a, b) => a.qty - b.qty,
     },
     {
-      title: "Created By",
+      title: "Creation By",
       dataIndex: "createdby",
+    },
+    {
+      title: "Creation Time",
+      dataIndex: "creationTime",
     },
     {
       title: "Action",
@@ -126,6 +129,7 @@ const ProductList = () => {
         price: product?.price,
         qty: product?.qty,
         createdby: product?.users,
+        creationTime: product?.creationTime,
         productImage: product?.imageList[0]?.filePath ?? "",
       }));
       setTableData(formattedData || []);

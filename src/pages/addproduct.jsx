@@ -7,15 +7,16 @@ import { toast } from "react-toastify";
 import { all_routes } from "../Router/all_routes";
 import {
   generateSlug,
-  handleImageChange,
+  handleImageChange as baseHandleImageChange,
   handleRemoveImage,
+  convertWebPToJPG,
+  loadImagesFromServer,
+  fetchImageFiles,
 } from "../utils/common";
 import { API_BASE_URL } from "../environment";
-import {
-  DISCOUNT_TYPES as discountType,
-  PRODUCT_TYPES as productType,
-  TAX_TYPES as taxType,
-} from "../constants";
+import { DISCOUNT_TYPES, PRODUCT_TYPES, TAX_TYPES } from "../constants";
+import { useDropdownState } from "../utils/useDropdownState";
+import { useMasterList } from "../hooks/useMasterList";
 
 // UI Components
 import Loader from "../components/loader/loader";
@@ -26,7 +27,7 @@ import AddUnits from "../components/modals/addUnit";
 import AddCategorys from "../components/modals/addCategory";
 import RefreshIcon from "../core/common/tooltip-content/refresh";
 import CollapesIcon from "../core/common/tooltip-content/collapes";
-import { useDropdownState } from "../utils/useDropdownState";
+import { generateFormData } from "../utils/formUtils";
 
 const defaultFormData = {
   code: 0,
@@ -39,10 +40,10 @@ const defaultFormData = {
   description: "",
   productType: 0,
   productTypeName: "",
-  qty: 0,
-  minQty: 0,
-  price: 0,
-  discount: 0,
+  qty: "",
+  minQty: "",
+  price: "",
+  discount: "",
   taxType: 0,
   taxTypeName: "",
   discountType: "",
@@ -60,10 +61,11 @@ const AddProduct = () => {
   const product = location?.state?.product;
 
   const [formData, setFormData] = useState(defaultFormData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [category, setCategory] = useState([]);
-  const [unit, setUnit] = useState([]);
   const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { list: category } = useMasterList(5);
+  const { list: unit } = useMasterList(8);
 
   const {
     dropdowns,
@@ -79,112 +81,73 @@ const AddProduct = () => {
     selectedDiscountType: null,
   });
 
-  // Initialize Form from Passed Product (for edit/view mode)
   useEffect(() => {
     if (product) {
-      const getProductDetails = async () => {
-        try {
-          const response = await fetch(
-            `${API_BASE_URL}/GetProductMasterDetails/6?code=${product?.code}`
-          );
-          const result = await response.json();
-          console.log("result", result);
-          const formattedProduct = {
-            ...defaultFormData,
-            code: result?.data[0]?.code,
-            productName: result?.data[0]?.name,
-            printName: result?.data[0]?.printName,
-            productSlug: result?.data[0]?.slug ?? generateSlug(formData?.name),
-            sku: result?.data[0]?.sku,
-            qty: result?.data[0]?.qty,
-            minQty: result?.data[0]?.minQty,
-            price: result?.data[0]?.price,
-            discount: result?.data[0]?.discount,
-            description: result?.data[0]?.description,
-            isActive: result?.data[0]?.isActive,
-            images: result?.data[0]?.imagePaths || [],
-          };
-          setDropdowns({
-            selectedCategory: {
-              value: result?.data[0]?.parentGrp,
-              label: result?.data[0]?.parentGrpName,
-            },
-            selectedUnit: {
-              value: result?.data[0]?.unit,
-              label: result?.data[0]?.unitName,
-            },
-            selectedProductType: {
-              value: result?.data[0]?.productType,
-              label: result?.data[0]?.productTypeName,
-            },
-            selectedTaxType: {
-              value: result?.data[0]?.taxType,
-              label: result?.data[0]?.taxTypeName,
-            },
-            selectedDiscountType: {
-              value: result?.data[0]?.discountType,
-              label: result?.data[0]?.discountTypeName,
-            },
-          });
-          setFormData(formattedProduct);
+      fetchProductDetails(product?.code);
+    } else {
+      generateSKU();
+    }
+  }, [product]);
 
-          setFormData(formattedProduct);
+  const fetchProductDetails = async (code) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/GetProductMasterDetails/6?code=${code}`
+      );
+      const result = await res.json();
+      const data = result?.data[0];
 
-          // ✅ Set images using preview + dummy file
-          const imageObjs = result?.data[0]?.imageList.map((img, index) => ({
-            file: new File([""], img.fileName, {
-              type: img.fileType,
-            }),
-            preview: img.filePath,
-            id: index,
-            isExisting: true, // mark it so backend keeps it
-          }));
-
-          setImages(imageObjs);
-        } catch (ex) {
-          toast.error(ex);
-        } finally {
-          setIsLoading(false);
-        }
+      const formatted = {
+        ...defaultFormData,
+        code: data.code,
+        productName: data.name,
+        printName: data.printName,
+        productSlug: data.slug ?? generateSlug(data.name),
+        sku: data.sku,
+        qty: data.qty,
+        minQty: data.minQty,
+        price: data.price,
+        discount: data.discount,
+        description: data.description,
+        isActive: data.isActive,
       };
-      getProductDetails();
+
+      setDropdowns({
+        selectedCategory: { value: data.parentGrp, label: data.parentGrpName },
+        selectedUnit: { value: data.unit, label: data.unitName },
+        selectedProductType: {
+          value: data.productType,
+          label: data.productTypeName,
+        },
+        selectedTaxType: { value: data.taxType, label: data.taxTypeName },
+        selectedDiscountType: {
+          value: data.discountType,
+          label: data.discountTypeName,
+        },
+      });
+      setFormData(formatted);
+      const imagesFromServer = await loadImagesFromServer(
+        data?.imageList || []
+      );
+      setImages(imagesFromServer);
+    } catch (error) {
+      toast.error("Failed to fetch product details.");
+    } finally {
+      setIsLoading(false);
     }
-  }, [product]);
+  };
 
-  useEffect(() => {
-    async function prepareImages() {
-      if (product) {
-        const fileList = [];
-
-        for (const image of images) {
-          try {
-            const file = await urlToFile(image.url, image.name, image.type);
-            fileList.push(file);
-          } catch (error) {
-            console.error("Failed to load image:", image.url, error);
-          }
-        }
-
-        setImages(fileList); // File[] list set in state
-      }
+  console.log("images", images);
+  const generateSKU = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/GenerateSku/generate-sku`);
+      const { sku } = await res.json();
+      setFormData((prev) => ({ ...prev, sku }));
+    } catch {
+      toast.error("Failed to generate SKU");
     }
-
-    prepareImages();
-  }, [product]);
-
-  console.log("imgggggggggggggggg", images);
-
-  async function urlToFile(url, filename, mimeType) {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new File([blob], filename, { type: mimeType });
-  }
-
-  useEffect(() => {
-    getselectList(5); // Categories
-    getselectList(8); // Units
-    if (!product) generateSKU(); // Generate SKU only for new products
-  }, []);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -207,123 +170,54 @@ const AddProduct = () => {
     setImages([]);
   };
 
-  const getselectList = async (type) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/GetMasterList/${type}`);
-      const { data } = await response.json();
-      if (type === 5) setCategory(data);
-      if (type === 8) setUnit(data);
-    } catch {
-      toast.error("Failed to fetch master list");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const generateSKU = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/GenerateSku/generate-sku`);
-      const { sku } = await res.json();
-      setFormData((prev) => ({ ...prev, sku }));
-    } catch {
-      toast.error("Failed to generate SKU");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  console.log("ram images", images);
-
-  const appendFormData = () => {
-    console.log("ram images2", images);
-
-    const fd = new FormData();
-
-    const fields = {
-      Code: formData.code,
-      Name: formData.productName,
-      PrintName: formData.productName,
-      ParentGrp: getValue("selectedCategory"),
-      Unit: getValue("selectedUnit"),
-      ProductType: getValue("selectedProductType"),
-      ProductTypeName: getLabel("selectedProductType"),
-      TaxType: getValue("selectedTaxType"),
-      TaxTypeName: getLabel("selectedTaxType"),
-      DiscountType: getValue("selectedDiscountType"),
-      DiscountTypeName: getLabel("selectedDiscountType"),
-      Description: formData.description,
-      Qty: formData.qty,
-      MinQty: formData.minQty,
-      Price: formData.price,
-      Discount: formData.discount,
-      Slug: formData.productSlug,
-      Sku: formData.sku,
-      IsActive: formData.isActive ? "true" : "false",
-      MasterType: formData.masterType,
-      Users: formData.users,
-    };
-
-    Object.entries(fields).forEach(([key, val]) => {
-      fd.append(key, val ?? "");
-    });
-
-    // images.forEach((img) => {
-    //   if (img.file) {
-    //     fd.append("Images", img.file);
-    //   }
-    // });
-
-    // Append only actual image files
-    images.forEach((img) => {
-      if (img?.file instanceof File) {
-        fd.append("Images", img.file);
-      }
-    });
-
-    // ✅ Append existing image paths as array
-    const existingImagePaths = images
-      .filter((img) => img?.isExisting && img.preview)
-      .map((img) => img.preview);
-
-    if (existingImagePaths.length > 0) {
-      existingImagePaths.forEach((path) => {
-        fd.append("ExistingImagePaths", path);
-      });
-    }
-
-    return fd;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) return;
-
     setIsLoading(true);
+
     try {
-      const formPayload = appendFormData();
+      const fields = {
+        Code: formData.code,
+        Name: formData.productName,
+        PrintName: formData.productName,
+        ParentGrp: getValue("selectedCategory"),
+        Unit: getValue("selectedUnit"),
+        ProductType: getValue("selectedProductType"),
+        ProductTypeName: getLabel("selectedProductType"),
+        TaxType: getValue("selectedTaxType"),
+        TaxTypeName: getLabel("selectedTaxType"),
+        DiscountType: getValue("selectedDiscountType"),
+        DiscountTypeName: getLabel("selectedDiscountType"),
+        Description: formData.description,
+        Qty: formData.qty,
+        MinQty: formData.minQty,
+        Price: formData.price,
+        Discount: formData.discount,
+        Slug: formData.productSlug,
+        Sku: formData.sku,
+        IsActive: formData.isActive ? "true" : "false",
+        MasterType: formData.masterType,
+        Users: formData.users,
+      };
 
-      for (let pair of formPayload.entries()) {
-        console.log("ramji", `${pair[0]}:`, pair[1]);
-      }
+      const payload = generateFormData({ fields, images });
 
-      const response = await fetch(`${API_BASE_URL}/SaveProductMasterDetails`, {
+      const res = await fetch(`${API_BASE_URL}/SaveProductMasterDetails`, {
         method: "POST",
-        body: formPayload,
+        body: payload,
       });
 
-      const result = await response.json();
+      const result = await res.json();
 
       if (result?.status === 1) {
+        toast.success(result.msg || "Product saved successfully");
         handleClear();
-        toast.success(result.msg || "Product added successfully");
         generateSKU();
       } else {
-        toast.error(result.msg || "Something went wrong");
+        toast.error(result.msg || "Failed to save product");
       }
-    } catch (error) {
-      toast.error("Failed to add product.");
+    } catch {
+      toast.error("Submission failed");
     } finally {
       setIsLoading(false);
     }
@@ -334,29 +228,23 @@ const AddProduct = () => {
       {isLoading && <Loader />}
       <div className="page-wrapper">
         <div className="content">
-          <div className="page-header">
-            <div className="add-item d-flex">
-              <div className="page-title">
-                <h4>{product ? "Edit Product" : "Create Product"}</h4>
-                <h6>
-                  {product ? "Edit existing product" : "Create new product"}
-                </h6>
-              </div>
+          <div className="page-header d-flex justify-content-between align-items-center">
+            <div className="page-title">
+              <h4>{product ? "Edit Product" : "Create Product"}</h4>
+              <h6>{product ? "Edit existing product" : "Add a new product"}</h6>
             </div>
-            <ul className="table-top-head">
+            <ul className="table-top-head d-flex gap-2">
               <RefreshIcon />
               <CollapesIcon />
               <li>
-                <div className="page-btn">
-                  <Link to={productlist} className="btn btn-secondary">
-                    <ArrowLeft className="me-2" /> Back to Product
-                  </Link>
-                </div>
+                <Link to={productlist} className="btn btn-secondary">
+                  <ArrowLeft className="me-2" /> Back to Products
+                </Link>
               </li>
             </ul>
           </div>
 
-          <form className="add-product-form" onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="add-product-form">
             <div className="add-product">
               <ProductInfo
                 formData={formData}
@@ -368,21 +256,27 @@ const AddProduct = () => {
                 category={category}
                 isLoading={isLoading}
               />
-
               <PricingStock
                 formData={formData}
                 handleChange={handleChange}
-                options={{ productType, taxType, discountType }}
+                options={{
+                  productType: PRODUCT_TYPES,
+                  taxType: TAX_TYPES,
+                  discountType: DISCOUNT_TYPES,
+                }}
                 dropdowns={dropdowns}
                 setDropdowns={setDropdowns}
                 isLoading={isLoading}
               />
-
               <ProductImages
                 images={images}
                 setImages={setImages}
                 handleImageChange={(e) =>
-                  handleImageChange({ e, setImages, existingImages: images })
+                  baseHandleImageChange({
+                    e,
+                    setImages,
+                    existingImages: images,
+                  })
                 }
                 handleRemoveImage={(index) =>
                   handleRemoveImage({ images, setImages, index })
@@ -391,29 +285,27 @@ const AddProduct = () => {
               />
             </div>
 
-            <div className="col-lg-12">
-              <div className="d-flex justify-content-end mb-4">
-                <button
-                  type="button"
-                  className="btn btn-secondary me-2"
-                  disabled={isLoading}
-                  onClick={handleClear}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={isLoading}
-                >
-                  {product ? "Update Product" : "Add Product"}
-                </button>
-              </div>
+            <div className="col-lg-12 d-flex justify-content-end my-4">
+              <button
+                type="button"
+                className="btn btn-secondary me-2"
+                onClick={handleClear}
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isLoading}
+              >
+                {product ? "Update Product" : "Add Product"}
+              </button>
             </div>
           </form>
         </div>
 
-        <div className="footer d-sm-flex align-items-center justify-content-between border-top bg-white p-3">
+        <footer className="footer bg-white border-top p-3 d-sm-flex justify-content-between">
           <p className="mb-0 text-gray-9">
             2014 - 2025 © NXI. All Right Reserved
           </p>
@@ -423,7 +315,7 @@ const AddProduct = () => {
               Xcel Technology
             </Link>
           </p>
-        </div>
+        </footer>
       </div>
 
       <AddUnits />

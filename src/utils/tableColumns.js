@@ -10,9 +10,14 @@ export const categoryColumn = [
     sorter: (a, b) => a.printName.localeCompare(b.printName),
   },
   {
-    title: "Created On",
-    dataIndex: "createdon",
-    sorter: (a, b) => new Date(a.createdon) - new Date(b.createdon),
+    title: "Creation By",
+    dataIndex: "creationBy",
+    sorter: (a, b) => new Date(a.creationBy) - new Date(b.creationBy),
+  },
+  {
+    title: "Creation Time",
+    dataIndex: "creationTime",
+    sorter: (a, b) => new Date(a.creationTime) - new Date(b.creationTime),
   },
   {
     title: "Status",
@@ -43,9 +48,14 @@ export const unitColumn = [
     sorter: (a, b) => a.printName.localeCompare(b.printName),
   },
   {
-    title: "Created On",
-    dataIndex: "createdon",
-    sorter: (a, b) => new Date(a.createdon) - new Date(b.createdon),
+    title: "Creation By",
+    dataIndex: "creationBy",
+    sorter: (a, b) => new Date(a.creationBy) - new Date(b.creationBy),
+  },
+  {
+    title: "Creation Time",
+    dataIndex: "creationTime",
+    sorter: (a, b) => new Date(a.creationTime) - new Date(b.creationTime),
   },
   {
     title: "Status",
