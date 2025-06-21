@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "feather-icons-react/build/IconComponents";
@@ -87,6 +88,7 @@ const AddProduct = () => {
     } else {
       generateSKU();
     }
+    // eslint-disable-next-line
   }, [product]);
 
   const fetchProductDetails = async (code) => {

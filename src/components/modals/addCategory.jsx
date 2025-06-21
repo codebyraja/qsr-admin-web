@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { API_BASE_URL } from "../../environment";
 import { toast } from "react-toastify";
+import { PlusCircle, X } from "feather-icons-react/build/IconComponents";
+import { Link } from "react-router-dom";
 
 const initialFormState = {
   name: "",
@@ -8,11 +10,13 @@ const initialFormState = {
   status: true,
   masterType: 5,
   users: "admin",
+  imges: [""],
 };
 
 const AddCategory = () => {
   const [formData, setFormData] = useState(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
+  const [image, setImage] = useState(null);
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -37,6 +41,15 @@ const AddCategory = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+    }
+    // const reader = new FileReader();
+    // reader.onload = () => setImage(reader.result);
+    // reader.readAsDataURL(file);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) return;
@@ -86,6 +99,89 @@ const AddCategory = () => {
           </div>
           <form onSubmit={handleSubmit}>
             <div className="modal-body">
+              {/* <div className="mb-3">
+                <div className="image-upload">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={isLoading}
+                    className="form-control"
+                  />
+                  <div className="image-uploads">
+                    <PlusCircle className="plus-down-add me-0" />
+                    <h4>Add Images</h4>
+                  </div>
+                </div>
+                {image && (
+                  <div className="d-flex flex-wrap gap-3">
+                    <div className="phone-img position-relative">
+                      <img
+                        // src={URL.createObjectURL(image)}
+                        alt={`preview-`}
+                        style={{
+                          width: 100,
+                          height: 100,
+                          objectFit: "cover",
+                        }}
+                      />
+                      <Link
+                        to="#"
+                        className="position-absolute" // top-0 end-0
+                        // onClick={() => handleRemoveImage(index)}
+                      >
+                        <X />
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div> */}
+              <div className="col-lg-12">
+                <div className="new-employee-field">
+                  <span>Avatar</span>
+                  <div className="profile-pic-upload mb-2">
+                    <div className="profile-pic">
+                      {image ? (
+                        <>
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt="Preview"
+                            style={{
+                              width: 100,
+                              height: 100,
+                              objectFit: "cover",
+                            }}
+                            className="img-thumbnail"
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-danger position-absolute top-0 end-0"
+                            onClick={() => setImage(null)}
+                            style={{ lineHeight: 1, padding: "2px 6px" }}
+                          >
+                            <X size={16} />
+                          </button>
+                        </>
+                      ) : (
+                        <div className="d-flex align-items-center">
+                          <PlusCircle className="me-2" />
+                          <span>Profile Photo</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="input-blocks mb-0">
+                      <div className="image-upload mb-0">
+                        <input className="file" type="file" />
+                        <div className="image-uploads">
+                          <h4>Change Image</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="mb-3">
                 <label className="form-label">
                   Category<span className="text-danger ms-1">*</span>
