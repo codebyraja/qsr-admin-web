@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
+import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { API_BASE_URL } from "../../environment";
 import { toast } from "react-toastify";
 import { PlusCircle, X } from "feather-icons-react/build/IconComponents";
-import { Link } from "react-router-dom";
 
 const initialFormState = {
   name: "",
@@ -10,28 +10,32 @@ const initialFormState = {
   status: true,
   masterType: 5,
   users: "admin",
-  imges: [""],
+  images: [""],
 };
 
-const AddCategory = () => {
+const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
   const [formData, setFormData] = useState(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
-  const [image, setImage] = useState(null);
-  const modalRef = useRef(null);
+  const [images, setImages] = useState(null);
+  const fileInputRef = useRef(null);
+  const isEditMode = Boolean(selectedRecord);
 
   useEffect(() => {
-    const resetForm = () => setFormData(initialFormState);
-    const modal = document.getElementById("add-categorys");
-
-    if (modal) {
-      modalRef.current = modal;
-      modal.addEventListener("show.bs.modal", resetForm);
+    if (isEditMode && selectedRecord) {
+      setFormData({
+        name: selectedRecord.name || "",
+        printName: selectedRecord.printName || "",
+        status: selectedRecord.status || true,
+        masterType: 5,
+        users: selectedRecord.users || "admin",
+        images: selectedRecord.images || [""],
+      });
+      setImages(selectedRecord.images?.[0] || null);
+    } else {
+      setFormData(initialFormState);
+      setImages(null);
     }
-
-    return () => {
-      modalRef.current?.removeEventListener("show.bs.modal", resetForm);
-    };
-  }, []);
+  }, [selectedRecord]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -43,208 +47,200 @@ const AddCategory = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-    }
-    // const reader = new FileReader();
-    // reader.onload = () => setImage(reader.result);
-    // reader.readAsDataURL(file);
+    if (file) setImages(file);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) return;
     setIsLoading(true);
-
     try {
-      const response = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
+      const fd = new FormData();
+      fd.append("Name", formData.name);
+      fd.append("PrintName", formData.printName);
+      fd.append("Status", formData.status);
+      fd.append("MasterType", 5);
+      fd.append("Users", "admin");
+      if (images) fd.append("Images", images);
+      if (isEditMode) fd.append("Code", selectedRecord.id);
+
+      const res = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: fd,
       });
 
-      const result = await response.json();
-      if (result?.status === 1) {
-        setFormData(initialFormState);
-        toast.success(result?.msg || "Category added successfully!");
+      const result = await res.json();
+      if (result.status === 1) {
+        toast.success(isEditMode ? "Category updated" : "Category added");
+        onSuccess();
+        handleClose();
       } else {
-        toast.error(result?.msg || "Something went wrong");
+        toast.error(result.msg || "Operation failed");
       }
-    } catch (error) {
-      toast.error("Failed to add category.");
+    } catch {
+      toast.error("Server error");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div
-      className="modal fade"
-      id="add-categorys"
-      tabIndex="-1"
-      role="dialog"
-      aria-labelledby="addCategorysLabel"
-      aria-hidden="true"
-    >
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h4 className="modal-title">Add Category</h4>
-            <button
-              type="button"
-              className="close bg-danger text-white fs-16"
-              data-bs-dismiss="modal"
-            >
-              <span>×</span>
-            </button>
-          </div>
-          <form onSubmit={handleSubmit}>
-            <div className="modal-body">
-              {/* <div className="mb-3">
-                <div className="image-upload">
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    disabled={isLoading}
-                    className="form-control"
-                  />
-                  <div className="image-uploads">
-                    <PlusCircle className="plus-down-add me-0" />
-                    <h4>Add Images</h4>
-                  </div>
-                </div>
-                {image && (
-                  <div className="d-flex flex-wrap gap-3">
-                    <div className="phone-img position-relative">
-                      <img
-                        // src={URL.createObjectURL(image)}
-                        alt={`preview-`}
-                        style={{
-                          width: 100,
-                          height: 100,
-                          objectFit: "cover",
-                        }}
-                      />
-                      <Link
-                        to="#"
-                        className="position-absolute" // top-0 end-0
-                        // onClick={() => handleRemoveImage(index)}
-                      >
-                        <X />
-                      </Link>
-                    </div>
+    <Modal show={show} onHide={handleClose} centered>
+      <Form onSubmit={handleSubmit}>
+        {/* <Modal.Header
+          closeButton
+          style={{ paddingTop: "1rem", paddingBottom: "1rem" }}
+        >
+          <Modal.Title>
+            {isEditMode ? "Edit Category" : "Add Category"}
+          </Modal.Title> */}
+        <Modal.Header
+
+        // style={{ paddingTop: "1rem", paddingBottom: "1rem" }}
+        >
+          <Modal.Title>
+            {isEditMode ? "Edit Category" : "Add Category"}
+          </Modal.Title>
+          <button
+            type="button"
+            className="btn-close"
+            aria-label="Close"
+            onClick={handleClose}
+            style={{
+              width: "0.85rem",
+              height: "0.85rem",
+              padding: "0.25rem",
+            }}
+          ></button>
+        </Modal.Header>
+        {/* </Modal.Header> */}
+
+        <Modal.Body>
+          {/* Image Upload */}
+          <div className="mb-3">
+            <label className="form-label">Avatar</label>
+            <div className="profile-pic-upload mb-2">
+              <div className="profile-pic position-relative">
+                {images ? (
+                  <>
+                    <img
+                      src={
+                        typeof images === "string"
+                          ? images
+                          : URL.createObjectURL(images)
+                      }
+                      alt="Preview"
+                      style={{
+                        width: 100,
+                        height: 100,
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-danger position-absolute rounded-circle d-flex align-items-center justify-content-center"
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        top: "-6px",
+                        right: "-6px",
+                        padding: 0,
+                        zIndex: 2,
+                      }}
+                      onClick={() => {
+                        setImages(null);
+                        if (fileInputRef.current)
+                          fileInputRef.current.value = "";
+                      }}
+                    >
+                      <X size={12} />
+                    </button>
+                  </>
+                ) : (
+                  <div className="d-flex align-items-center">
+                    <PlusCircle className="me-2" />
+                    <span>Profile Photo</span>
                   </div>
                 )}
-              </div> */}
-              <div className="col-lg-12">
-                <div className="new-employee-field">
-                  <span>Avatar</span>
-                  <div className="profile-pic-upload mb-2">
-                    <div className="profile-pic">
-                      {image ? (
-                        <>
-                          <img
-                            src={URL.createObjectURL(image)}
-                            alt="Preview"
-                            style={{
-                              width: 100,
-                              height: 100,
-                              objectFit: "cover",
-                            }}
-                            className="img-thumbnail"
-                          />
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-danger position-absolute top-0 end-0"
-                            onClick={() => setImage(null)}
-                            style={{ lineHeight: 1, padding: "2px 6px" }}
-                          >
-                            <X size={16} />
-                          </button>
-                        </>
-                      ) : (
-                        <div className="d-flex align-items-center">
-                          <PlusCircle className="me-2" />
-                          <span>Profile Photo</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="input-blocks mb-0">
-                      <div className="image-upload mb-0">
-                        <input className="file" type="file" />
-                        <div className="image-uploads">
-                          <h4>Change Image</h4>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              <div className="mb-3">
-                <label className="form-label">
-                  Category<span className="text-danger ms-1">*</span>
-                </label>
+              <div className="image-upload mb-0">
                 <input
-                  type="text"
+                  type="file"
                   className="form-control"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  accept="image/*"
+                  required={!isEditMode}
                 />
               </div>
-              <div className="mb-3">
-                <label className="form-label">
-                  Print Name<span className="text-danger ms-1">*</span>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="printName"
-                  value={formData.printName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="mb-0 d-flex justify-content-between align-items-center">
-                <label className="form-label mb-0">
-                  Status<span className="text-danger ms-1">*</span>
-                </label>
-                <div className="status-toggle modal-status">
-                  <input
-                    type="checkbox"
-                    id="statusToggle"
-                    className="check"
-                    name="status"
-                    checked={formData.status}
-                    onChange={handleChange}
-                  />
-                  <label htmlFor="statusToggle" className="checktoggle" />
-                </div>
-              </div>
             </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn me-2 btn-secondary fs-13 fw-medium p-2 px-3 shadow-none"
-                data-bs-dismiss="modal"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary fs-13 fw-medium p-2 px-3"
-                disabled={isLoading}
-              >
-                {isLoading ? "Adding..." : "Add Category"}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+          </div>
+
+          {/* Category */}
+          <Form.Group className="mb-3">
+            <Form.Label>
+              Category<span className="text-danger ms-1">*</span>
+            </Form.Label>
+            <Form.Control
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+
+          {/* Print Name */}
+          <Form.Group className="mb-3">
+            <Form.Label>
+              Print Name<span className="text-danger ms-1">*</span>
+            </Form.Label>
+            <Form.Control
+              type="text"
+              name="printName"
+              value={formData.printName}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
+
+          {/* Status */}
+          <Form.Group className="d-flex justify-content-between align-items-center">
+            <Form.Label className="mb-0">
+              Status<span className="text-danger ms-1">*</span>
+            </Form.Label>
+            <Form.Check
+              type="switch"
+              id="statusToggle"
+              name="status"
+              checked={formData.status}
+              onChange={handleChange}
+            />
+          </Form.Group>
+        </Modal.Body>
+
+        <Modal.Footer className="d-flex justify-content-end gap-2">
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button type="submit" variant="primary" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Spinner animation="border" size="sm" className="me-2" />
+                {isEditMode ? "Updating..." : "Adding..."}
+              </>
+            ) : isEditMode ? (
+              "Update"
+            ) : (
+              "Add"
+            )}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
   );
 };
 

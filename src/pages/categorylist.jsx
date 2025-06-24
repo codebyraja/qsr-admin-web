@@ -4,32 +4,28 @@ import { toast } from "react-toastify";
 import CommonTableHeader from "../core/common/table/tableHeader";
 import TableTopFilter from "../core/common/table/tableTopFilter";
 import CommonTable from "../core/common/table/commonTable";
-import CommonFooter from "../core/common/footer/commonFooter";
 import AddCategorys from "../components/modals/addCategory";
-import CommonDeleteModal from "../core/common/modal/commonDeleteModal";
-import { Table } from "antd";
-import { generateColumns } from "../utils/generateColumns";
-import { categoryColumn } from "../utils/tableColumns";
-import ApiService from "../services/api";
 import Loader from "../components/loader/loader";
 import { API_BASE_URL } from "../environment";
-import { Link, useNavigate } from "react-router-dom";
-import Datatable from "../core/pagination/datatable";
 import ProductActionButtons from "../components/ProductActionButtons";
-import { all_routes } from "../Router/all_routes";
+import TableColumnImageText from "../components/TableColumnImageText";
 
 const CategoryList = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState(null);
-
-  const navigate = useNavigate();
-  const route = all_routes;
+  const [selectedItem, setSelectedItem] = useState(null); // used for edit or add
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const columns = [
     {
       title: "Category",
       dataIndex: "name",
+      render: (_, record) => (
+        <TableColumnImageText
+          imageSrc={record?.categoryImg}
+          text={record?.name}
+        />
+      ),
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
@@ -48,67 +44,70 @@ const CategoryList = () => {
       sorter: (a, b) => new Date(a.creationTime) - new Date(b.creationTime),
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (_, item) => (
+      title: "Actions",
+      dataIndex: "actions",
+      render: (_, record) => (
         <ProductActionButtons
-          handleEditClick={() => handleEditClick(item)}
-          handleDeleteClick={() => handleDeleteClick(item)}
-          deleteModalId="delete-product-modal"
+          handleEditClick={() => handleEdit(record)}
+          handleDeleteClick={() => handleDeleteClick(record)}
           showView={false}
         />
       ),
     },
-    {
-      type: "actions",
-      actions: ["edit", "delete"],
-    },
   ];
-
-  const handleEditClick = (record) => {
-    // setMode("modify");
-    setSelectedRecord(record);
-    navigate(route.addproduct, { state: { product: record } });
-  };
-
-  const handleDeleteClick = (record) => {
-    // setMode("delete");
-    setSelectedRecord(record);
-    // Open your delete confirmation modal here
-  };
-
-  useEffect(() => {
-    fetchCategories();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const fetchCategories = async () => {
     setLoading(true);
     try {
       const resp = await fetch(`${API_BASE_URL}/GetMasterDetails/5`);
-      const result = await resp.json();
-      console.log("Parsed JSON result: ", result);
+      const res = await resp.json();
+      if (!Array.isArray(res.data)) throw new Error();
 
-      if (!result.data || !Array.isArray(result.data)) {
-        throw new Error("API returned invalid or empty data.");
-      }
-
-      const categories = result.data.map((item) => ({
-        id: item.code,
-        name: item.name || "Unnamed",
-        printName: item.printName ?? "N/A",
-        createdOn: item.createdOn ?? "N/A",
-        status: item.isActive ? "Active" : "Inactive",
-        creationBy: item.users ?? "N/A",
-        creationTime: item.creationTime ?? "N/A",
-      }));
-
-      setTableData(categories);
-    } catch (error) {
-      toast.error("Failed to load categories.");
+      setTableData(
+        res.data.map((item) => ({
+          id: item.code,
+          name: item.name,
+          printName: item.printName,
+          status: item.isActive,
+          creationBy: item.users,
+          creationTime: item.creationTime,
+          categoryImg: item.imageList?.[0]?.filePath,
+        }))
+      );
+    } catch {
+      toast.error("Failed to load categories");
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleEdit = (record) => {
+    setSelectedItem(record);
+    setIsModalVisible(true);
+  };
+
+  const handleAdd = () => {
+    setSelectedItem(null); // for Add mode
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    setSelectedItem(null);
+  };
+
+  const handleAddedOrUpdated = () => {
+    fetchCategories();
+    handleModalClose();
+  };
+
+  const handleDeleteClick = (record) => {
+    // Add your delete modal handling logic here
+    toast.warn(`Delete logic not implemented for: ${record.name}`);
   };
 
   return (
@@ -116,15 +115,25 @@ const CategoryList = () => {
       {loading && <Loader />}
       <div className="page-wrapper">
         <div className="content">
-          <CommonTableHeader title="Category" modalId="add-categorys" />
+          <CommonTableHeader title="Category" onAddClick={handleAdd} />
           <div className="card table-list-card">
             <TableTopFilter />
-            <CommonTable columns={columns} data={tableData} loading={loading} />
+            <CommonTable
+              columns={columns}
+              data={tableData}
+              loading={loading}
+              rowKey={(record) => record.id}
+            />
           </div>
         </div>
-        {/* <CommonFooter /> */}
-        <AddCategorys />
-        {/* <CommonDeleteModal /> */}
+
+        {/* React-Bootstrap style modal control */}
+        <AddCategorys
+          show={isModalVisible}
+          handleClose={handleModalClose}
+          selectedRecord={selectedItem}
+          onSuccess={handleAddedOrUpdated}
+        />
       </div>
     </>
   );

@@ -140,7 +140,7 @@ const AddProduct = () => {
     }
   };
 
-  console.log("images", images);
+  // console.log("images", images);
   const generateSKU = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/GenerateSku/generate-sku`);

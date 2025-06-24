@@ -2,165 +2,77 @@ import React, { useState } from "react";
 import ImageWithBasePath from "../../../core/img/imagewithbasebath";
 import { Link } from "react-router-dom";
 import { all_routes } from "../../../Router/all_routes";
+// import "./_signin.scss";
 
 const Signin = () => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const route = all_routes;
 
   const togglePasswordVisibility = () => {
-    setPasswordVisible((prevState) => !prevState);
+    setPasswordVisible((prev) => !prev);
   };
-  const route = all_routes;
-  // const { dashboard, forgotPassword, newdashboard } = route;
 
   return (
-    <>
-      {/* Main Wrapper */}
-      <div className="main-wrapper">
-        <div className="account-content">
-          <div className="login-wrapper bg-img">
-            <div className="login-content authent-content">
-              <form>
-                <div className="login-userset">
-                  <div className="login-logo logo-normal">
-                    <ImageWithBasePath src="assets/img/logo.png" alt="img" />
-                  </div>
-                  <Link to={route.dashboard} className="login-logo logo-white">
-                    <ImageWithBasePath
-                      src="assets/img/logo-white.png"
-                      alt="Img"
-                    />
-                  </Link>
-                  <div className="login-userheading">
-                    <h3>Sign In</h3>
-                    <h4 className="fs-16">
-                      Access the Dreamspos panel using your email and passcode.
-                    </h4>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">
-                      Email <span className="text-danger"> *</span>
-                    </label>
-                    <div className="input-group">
-                      <input
-                        type="text"
-                        defaultValue="admin@nxi.com"
-                        className="form-control border-end-0"
-                      />
-                      <span className="input-group-text border-start-0">
-                        <i className="ti ti-mail" />
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">
-                      Password <span className="text-danger"> *</span>
-                    </label>
-                    <div className="pass-group">
-                      <input
-                        type={isPasswordVisible ? "text" : "password"}
-                        className="pass-input form-control"
-                        defaultValue="admin123"
-                      />
-                      <span
-                        className={`ti toggle-password ${
-                          isPasswordVisible ? "ti-eye" : "ti-eye-off"
-                        }`}
-                        onClick={togglePasswordVisibility}
-                      ></span>
-                    </div>
-                  </div>
-                  <div className="form-login authentication-check">
-                    <div className="row">
-                      <div className="col-12 d-flex align-items-center justify-content-between">
-                        <div className="custom-control custom-checkbox">
-                          <label className="checkboxs ps-4 mb-0 pb-0 line-height-1 fs-16 text-gray-6">
-                            <input type="checkbox" className="form-control" />
-                            <span className="checkmarks" />
-                            Remember me
-                          </label>
-                        </div>
-                        <div className="text-end">
-                          <Link
-                            className="text-orange fs-16 fw-medium"
-                            to={route.forgotPassword}
-                          >
-                            Forgot Password?
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="form-login">
-                    <Link
-                      to={route.newdashboard}
-                      className="btn btn-primary w-100"
-                    >
-                      Sign In
-                    </Link>
-                  </div>
-                  {/* <div className="signinform">
-                    <h4>
-                      New on our platform?
-                      <Link to={route.register} className="hover-a">
-                        {" "}
-                        Create an account
-                      </Link>
-                    </h4>
-                  </div>
-                   <div className="form-setlogin or-text">
-                    <h4>OR</h4>
-                  </div>
-                  <div className="mt-2">
-                    <div className="d-flex align-items-center justify-content-center flex-wrap">
-                      <div className="text-center me-2 flex-fill">
-                        <Link
-                          to="#"
-                          className="br-10 p-2 btn btn-info d-flex align-items-center justify-content-center"
-                        >
-                          <ImageWithBasePath
-                            className="img-fluid m-1"
-                            src="assets/img/icons/facebook-logo.svg"
-                            alt="Facebook"
-                          />
-                        </Link>
-                      </div>
-                      <div className="text-center me-2 flex-fill">
-                        <Link
-                          to="#"
-                          className="btn btn-white br-10 p-2  border d-flex align-items-center justify-content-center"
-                        >
-                          <ImageWithBasePath
-                            className="img-fluid m-1"
-                            src="assets/img/icons/google-logo.svg"
-                            alt="Facebook"
-                          />
-                        </Link>
-                      </div>
-                      <div className="text-center flex-fill">
-                        <Link
-                          to="#"
-                          className="bg-dark br-10 p-2 btn btn-dark d-flex align-items-center justify-content-center"
-                        >
-                          <ImageWithBasePath
-                            className="img-fluid m-1"
-                            src="assets/img/icons/apple-logo.svg"
-                            alt="Apple"
-                          />
-                        </Link>
-                      </div>
-                    </div>
-                  </div> */}
-                  <div className="my-4 d-flex justify-content-center align-items-center copyright-text">
-                    <p>Copyright © 2025 NXI</p>
-                  </div>
-                </div>
-              </form>
+    <div className="signin-wrapper">
+      <div className="signin-box animate-entry">
+        <div className="signin-header fade-in delay-1">
+          <ImageWithBasePath
+            src="assets/img/logo.png"
+            alt="Logo"
+            className="signin-logo"
+          />
+          <h2>Welcome Back</h2>
+          <p>Login to continue managing your orders.</p>
+        </div>
+
+        <form className="signin-form">
+          <div className="form-group float-label delay-2">
+            <input
+              type="email"
+              className="form-control"
+              defaultValue={"rajaisexcellent@gmail.com"}
+              required
+            />
+            <label>Username</label>
+          </div>
+
+          <div className="form-group float-label delay-3">
+            <div className="password-wrapper">
+              <input
+                type={isPasswordVisible ? "text" : "password"}
+                className="form-control"
+                defaultValue={"password123"}
+                required
+              />
+              <label>Password</label>
+              <span
+                className="toggle-password"
+                onClick={togglePasswordVisibility}
+              >
+                {isPasswordVisible ? "🙈" : "👁️"}
+              </span>
             </div>
           </div>
+
+          <div className="form-options delay-4">
+            <label className="checkbox">
+              <input type="checkbox" /> Remember me
+            </label>
+            <Link to={route.forgotPassword} className="forgot-link">
+              Forgot password?
+            </Link>
+          </div>
+
+          <Link to={route.newdashboard} className="signin-button delay-5">
+            Sign In
+          </Link>
+        </form>
+
+        <div className="signin-footer fade-in delay-6">
+          <p>© 2025 NXI. Future-ready experience.</p>
         </div>
       </div>
-      {/* /Main Wrapper */}
-    </>
+    </div>
   );
 };
 

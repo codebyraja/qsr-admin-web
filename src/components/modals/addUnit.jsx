@@ -9,6 +9,7 @@ const initialFormState = {
   status: true,
   masterType: 8,
   users: "admin",
+  images: [""],
 };
 
 const AddUnits = () => {
@@ -35,28 +36,34 @@ const AddUnits = () => {
     }));
   };
 
-  // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLoading) return;
-
     setIsLoading(true);
+
     try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("Name", formData.name);
+      formDataToSend.append("PrintName", formData.printName);
+      formDataToSend.append("Status", formData.status);
+      formDataToSend.append("MasterType", formData.masterType);
+      formDataToSend.append("Users", formData.users);
+      formDataToSend.append("Images", formData.images[0]);
+
       const response = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
       const result = await response.json();
       if (result?.status === 1) {
         setFormData(initialFormState);
-        toast.success(result?.msg || "Unit added successfully!");
+        toast.success(result?.msg || "Category added successfully!");
       } else {
         toast.error(result?.msg || "Something went wrong");
       }
-    } catch {
-      toast.error("Failed to add unit.");
+    } catch (error) {
+      toast.error("Failed to add category.");
     } finally {
       setIsLoading(false);
     }

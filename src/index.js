@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "../node_modules/bootstrap/dist/js/bootstrap.bundle.js";
 import { base_path } from "./environment.jsx";
@@ -23,11 +24,11 @@ if (rootElement) {
   const root = createRoot(rootElement);
   root.render(
     // <React.StrictMode>
-      <Provider store={store}>
-        <BrowserRouter basename={base_path}>
-          <AllRoutes />
-        </BrowserRouter>
-      </Provider>
+    <Provider store={store}>
+      <BrowserRouter basename={base_path}>
+        <AllRoutes />
+      </BrowserRouter>
+    </Provider>
     // </React.StrictMode>
   );
 } else {
