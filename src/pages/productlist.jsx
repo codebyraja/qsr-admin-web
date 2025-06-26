@@ -137,22 +137,21 @@ const ProductList = () => {
   };
 
   const handleDeleteClick = (record) => {
-    console.log("Delete record:", record);
     setShowDeleteModal(true);
     setDeletingItem(record);
   };
-  console.log("Deleting item:", deletingItem);
 
   const confirmDelete = async () => {
-    if (!deletingItem?.id) return;
+    if (!deletingItem?.code) return;
     setIsDeleting(true);
+    setIsLoading(true);
     try {
       const resp = await fetch(
-        `${API_BASE_URL}/DeleteMasterByTypeAndCode/6/${deletingItem?.id}`,
+        `${API_BASE_URL}/DeleteMasterByTypeAndCode/6/${deletingItem?.code}`,
         { method: "DELETE" }
       );
       const res = await resp.json();
-
+      console.log("Delete response:", res);
       if (res.status === 1) {
         toast.success(res.msg || "Product deleted successfully");
         fetchCategories();
@@ -165,6 +164,7 @@ const ProductList = () => {
       setIsDeleting(false);
       setShowDeleteModal(false);
       setDeletingItem(null);
+      setIsLoading(false);
     }
   };
 

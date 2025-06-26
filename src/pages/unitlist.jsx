@@ -109,6 +109,7 @@ const UnitList = () => {
   const confirmDelete = async () => {
     if (!deletingItem?.id) return;
     setIsDeleting(true);
+    setLoading(true);
     try {
       const resp = await fetch(
         `${API_BASE_URL}/DeleteMasterByTypeAndCode/8/${deletingItem?.id}`,
@@ -128,6 +129,7 @@ const UnitList = () => {
       setIsDeleting(false);
       setShowDeleteModal(false);
       setDeletingItem(null);
+      setLoading(false);
     }
   };
 

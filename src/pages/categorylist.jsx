@@ -82,8 +82,7 @@ const CategoryList = () => {
   const confirmDelete = async () => {
     if (!deletingItem?.id) return;
     setIsDeleting(true);
-    console.log("Deleting category:", deletingItem?.id);
-
+    setLoading(true);
     try {
       const resp = await fetch(
         `${API_BASE_URL}/DeleteMasterByTypeAndCode/5/${deletingItem?.id}`,
@@ -103,6 +102,7 @@ const CategoryList = () => {
       setIsDeleting(false);
       setShowDeleteModal(false);
       setDeletingItem(null);
+      setLoading(false);
     }
   };
 
