@@ -1,7 +1,7 @@
 import React from "react";
 import TableTopHead from "./tableTopHead";
 
-const CommonTableHeader = ({ title, modalId, onAdd }) => (
+const CommonTableHeader = ({ title, modalId, onAddClick }) => (
   <div className="page-header">
     <div className="add-item d-flex">
       <div className="page-title">
@@ -13,9 +13,9 @@ const CommonTableHeader = ({ title, modalId, onAdd }) => (
     <div className="page-btn">
       <button
         className="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target={`#${modalId}`}
-        onClick={onAdd}
+        // data-bs-toggle="modal"
+        // data-bs-target={`#${modalId}`}
+        onClick={onAddClick}
       >
         + Add {title}
       </button>

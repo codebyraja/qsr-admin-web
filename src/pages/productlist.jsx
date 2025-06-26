@@ -15,6 +15,7 @@ import { all_routes } from "../Router/all_routes";
 import { setToogleHeader } from "../core/redux/action";
 import { API_BASE_URL } from "../environment";
 import { useNavigate } from "react-router-dom";
+import CommonDeleteModal from "../components/CommonDeleteModal";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -27,32 +28,9 @@ const ProductList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
-
-  const handleCollapseToggle = (e) => {
-    e.preventDefault();
-    dispatch(setToogleHeader(!isHeaderCollapsed));
-  };
-
-  const handleEditClick = (record) => {
-    // setMode("modify");
-    setSelectedRecord(record);
-    navigate(route.addproduct, { state: { product: record } });
-  };
-
-  const handleViewClick = (record) => {
-    setSelectedRecord(record);
-    navigate(route.productdetails, { state: { product: record } });
-  };
-
-  const handleDeleteClick = (record) => {
-    // setMode("delete");
-    setSelectedRecord(record);
-    // Open your delete confirmation modal here
-  };
-
-  const handleDelete = () => {
-    // actual delete logic goes here
-  };
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingItem, setDeletingItem] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const columns = [
     {
@@ -62,11 +40,11 @@ const ProductList = () => {
     },
     {
       title: "Product",
-      dataIndex: "product",
+      dataIndex: "name",
       render: (_, record) => (
         <TableColumnImageText
           imageSrc={record?.productImage}
-          text={record?.product}
+          text={record?.name}
         />
       ),
       sorter: (a, b) => a.product.localeCompare(b.product),
@@ -102,18 +80,17 @@ const ProductList = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: (_, item) => (
+      render: (_, record) => (
         <ProductActionButtons
-          handleViewClick={() => handleViewClick(item)}
-          handleEditClick={() => handleEditClick(item)}
-          handleDeleteClick={() => handleDeleteClick(item)}
-          deleteModalId="delete-product-modal"
+          handleViewClick={() => handleViewClick(record)}
+          handleEditClick={() => handleEditClick(record)}
+          handleDeleteClick={() => handleDeleteClick(record)}
         />
       ),
     },
   ];
 
-  const getProducts = async () => {
+  const fetchCategories = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/GetProductMasterDetails/6`);
@@ -122,7 +99,7 @@ const ProductList = () => {
       const formattedData = result?.data?.map((product, index) => ({
         key: index,
         code: product?.code,
-        product: product?.name,
+        name: product?.name,
         sku: product?.sku,
         category: product?.parentGrpName,
         unit: product?.unitName,
@@ -141,8 +118,55 @@ const ProductList = () => {
   };
 
   useEffect(() => {
-    getProducts();
+    fetchCategories();
   }, []);
+
+  const handleCollapseToggle = (e) => {
+    e.preventDefault();
+    dispatch(setToogleHeader(!isHeaderCollapsed));
+  };
+
+  const handleEditClick = (record) => {
+    setSelectedRecord(record);
+    navigate(route.addproduct, { state: { product: record } });
+  };
+
+  const handleViewClick = (record) => {
+    setSelectedRecord(record);
+    navigate(route.productdetails, { state: { product: record } });
+  };
+
+  const handleDeleteClick = (record) => {
+    console.log("Delete record:", record);
+    setShowDeleteModal(true);
+    setDeletingItem(record);
+  };
+  console.log("Deleting item:", deletingItem);
+
+  const confirmDelete = async () => {
+    if (!deletingItem?.id) return;
+    setIsDeleting(true);
+    try {
+      const resp = await fetch(
+        `${API_BASE_URL}/DeleteMasterByTypeAndCode/6/${deletingItem?.id}`,
+        { method: "DELETE" }
+      );
+      const res = await resp.json();
+
+      if (res.status === 1) {
+        toast.success(res.msg || "Product deleted successfully");
+        fetchCategories();
+      } else {
+        toast.error(res.msg || "Failed to delete product");
+      }
+    } catch {
+      toast.error("Error deleting product");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setDeletingItem(null);
+    }
+  };
 
   return (
     <>
@@ -210,11 +234,23 @@ const ProductList = () => {
           <div className="card table-list-card">
             <div className="card-body">
               <div className="table-responsive">
-                <Table columns={columns} dataSource={tableData} />
+                <Table
+                  columns={columns}
+                  dataSource={tableData}
+                  rowKey={(record) => record.id}
+                />
               </div>
             </div>
           </div>
         </div>
+        <CommonDeleteModal
+          handleShow={showDeleteModal}
+          handleClose={() => setShowDeleteModal(false)}
+          handleConfirmDelete={confirmDelete}
+          title="Delete Product"
+          message={`Are you sure you want to delete the product : "${deletingItem?.name}"?`}
+          isDeleting={isDeleting}
+        />
       </div>
     </>
   );

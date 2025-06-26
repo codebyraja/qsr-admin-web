@@ -14,6 +14,8 @@ const ProductInfo = ({
   unit,
   category,
   isLoading,
+  onAddUnit,
+  onAddCategory,
 }) => {
   return (
     <div className="accordion-item border mb-4">
@@ -103,8 +105,9 @@ const ProductInfo = ({
                   </label>
                   <Link
                     to="#"
-                    data-bs-toggle="modal"
-                    data-bs-target="#add-units"
+                    // data-bs-toggle="modal"
+                    // data-bs-target="#add-units"
+                    onClick={onAddUnit}
                   >
                     <PlusCircle
                       data-feather="plus-circle"
@@ -141,17 +144,18 @@ const ProductInfo = ({
                       Category
                       <span className="text-danger ms-1">*</span>
                     </label>
-                    {/* <Link
+                    <Link
                       to="#"
-                      data-bs-toggle="modal"
-                      data-bs-target="#add-prod-categorys"
+                      // data-bs-toggle="modal"
+                      // data-bs-target="#add-prod-categorys"
+                      onClick={onAddCategory}
                     >
                       <PlusCircle
                         data-feather="plus-circle"
                         className="plus-down-add"
                       />
                       <span>Add New</span>
-                    </Link> */}
+                    </Link>
                   </div>
                   <Select
                     classNamePrefix="react-select"

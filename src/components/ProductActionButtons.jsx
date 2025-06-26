@@ -17,8 +17,6 @@ const ProductActionButtons: React.FC<Props> = ({
   handleViewClick,
   handleEditClick,
   handleDeleteClick,
-  deleteModalId = "delete-modal",
-
   showView = true,
   showEdit = true,
   showDelete = true,
@@ -56,8 +54,8 @@ const ProductActionButtons: React.FC<Props> = ({
           <Link
             to="#"
             className="confirm-text p-2"
-            data-bs-toggle="modal"
-            data-bs-target={`#${deleteModalId}`}
+            // data-bs-toggle="modal"
+            // data-bs-target={`#${deleteModalId}`}
             onClick={(e) => {
               e.preventDefault();
               handleDeleteClick();

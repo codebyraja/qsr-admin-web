@@ -1,4 +1,3 @@
-// eslint-disable-next-line
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "feather-icons-react/build/IconComponents";
@@ -10,9 +9,7 @@ import {
   generateSlug,
   handleImageChange as baseHandleImageChange,
   handleRemoveImage,
-  convertWebPToJPG,
   loadImagesFromServer,
-  fetchImageFiles,
 } from "../utils/common";
 import { API_BASE_URL } from "../environment";
 import { DISCOUNT_TYPES, PRODUCT_TYPES, TAX_TYPES } from "../constants";
@@ -24,11 +21,12 @@ import Loader from "../components/loader/loader";
 import ProductInfo from "../components/product/ProductInfo";
 import PricingStock from "../components/product/PricingStock";
 import ProductImages from "../components/product/ProductImages";
-import AddUnits from "../components/modals/addUnit";
-import AddCategorys from "../components/modals/addCategory";
+import AddCategory from "../components/modals/addCategory";
+import AddUnit from "../components/modals/addUnit";
 import RefreshIcon from "../core/common/tooltip-content/refresh";
 import CollapesIcon from "../core/common/tooltip-content/collapes";
 import { generateFormData } from "../utils/formUtils";
+import { Button, Spinner } from "react-bootstrap";
 
 const defaultFormData = {
   code: 0,
@@ -64,9 +62,16 @@ const AddProduct = () => {
   const [formData, setFormData] = useState(defaultFormData);
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [activeModal, setActiveModal] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { list: category } = useMasterList(5);
-  const { list: unit } = useMasterList(8);
+  const { list: category, refetch: refetchCategory } = useMasterList(5);
+
+  const { list: unit, refetch: refetchUnit } = useMasterList(8);
+
+  console.log("unit", unit);
+  console.log("category", category);
 
   const {
     dropdowns,
@@ -88,7 +93,7 @@ const AddProduct = () => {
     } else {
       generateSKU();
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product]);
 
   const fetchProductDetails = async (code) => {
@@ -128,7 +133,9 @@ const AddProduct = () => {
           label: data.discountTypeName,
         },
       });
+
       setFormData(formatted);
+
       const imagesFromServer = await loadImagesFromServer(
         data?.imageList || []
       );
@@ -140,7 +147,6 @@ const AddProduct = () => {
     }
   };
 
-  // console.log("images", images);
   const generateSKU = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/GenerateSku/generate-sku`);
@@ -225,6 +231,27 @@ const AddProduct = () => {
     }
   };
 
+  const openModal = (type) => {
+    setActiveModal(type); // 'unit' or 'category'
+    setIsModalVisible(true);
+    setSelectedItem(null);
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+    setIsModalVisible(false);
+    setSelectedItem(null);
+  };
+
+  const handleAddedOrUpdated = () => {
+    if (activeModal === "unit") {
+      refetchUnit();
+    } else if (activeModal === "category") {
+      refetchCategory();
+    }
+    closeModal();
+  };
+
   return (
     <>
       {isLoading && <Loader />}
@@ -257,6 +284,8 @@ const AddProduct = () => {
                 unit={unit}
                 category={category}
                 isLoading={isLoading}
+                onAddUnit={() => openModal("unit")}
+                onAddCategory={() => openModal("category")}
               />
               <PricingStock
                 formData={formData}
@@ -296,13 +325,18 @@ const AddProduct = () => {
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={isLoading}
-              >
-                {product ? "Update Product" : "Add Product"}
-              </button>
+              <Button type="submit" variant="primary" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    {product ? "Updating..." : "Adding..."}
+                  </>
+                ) : product ? (
+                  "Update"
+                ) : (
+                  "Add Product"
+                )}
+              </Button>
             </div>
           </form>
         </div>
@@ -320,8 +354,24 @@ const AddProduct = () => {
         </footer>
       </div>
 
-      <AddUnits />
-      <AddCategorys />
+      {/* Modal rendering logic */}
+      {activeModal === "unit" && (
+        <AddUnit
+          show={isModalVisible}
+          handleClose={closeModal}
+          selectedRecord={selectedItem}
+          onSuccess={handleAddedOrUpdated}
+        />
+      )}
+
+      {activeModal === "category" && (
+        <AddCategory
+          show={isModalVisible}
+          handleClose={closeModal}
+          selectedRecord={selectedItem}
+          onSuccess={handleAddedOrUpdated}
+        />
+      )}
     </>
   );
 };

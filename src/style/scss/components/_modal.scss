@@ -1,0 +1,65 @@
+// .modal-close- {
+//   width: 0.80rem;
+//   height: 0.80rem;
+//   padding: 0.25rem;
+//   background-color: transparent;
+//   border: none;
+//   border-radius: 50%;
+//   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+//   display: flex;
+//   color: white;
+//   font-size: 0.70rem;
+//   z-index: 1050;
+// }
+
+// _modal.scss
+
+.modal-close-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // color: white;
+  // font-size: 3rem;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+}
+
+.profile-pic {
+  position: relative;
+
+  img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .remove-image-button {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    z-index: 2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// .modal-content {
+//   position: relative;
+//   padding: 1rem;
+//   background-color: white;
+//   border-radius: 8px;
+//   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+// }

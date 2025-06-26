@@ -1,13 +1,19 @@
-export function generateSlug(name) {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-") // Replace spaces and special chars with -
-    .replace(/^-+|-+$/g, ""); // Remove leading/trailing -
+// export function generateSlug(name) {
+//   return name
+//     .toLowerCase()
+//     .replace(/[^a-z0-9]+/g, "-") // Replace spaces and special chars with -
+//     .replace(/^-+|-+$/g, ""); // Remove leading/trailing -
+// }
+
+export function generateSlug(name, options = {}) {
+  const { separator = "-", lowercase = true } = options;
+  let slug = name.replace(/[^a-zA-Z0-9]+/g, separator).replace(/^-+|-+$/g, "");
+  return lowercase ? slug.toLowerCase() : slug;
 }
 
 export function handleRemoveImage({ images, setImages, index }) {
   const newImages = [...images];
-  URL.revokeObjectURL(newImages[index].preview);
+  if (newImages[index]?.preview) URL.revokeObjectURL(newImages[index].preview);
   newImages.splice(index, 1);
   setImages(newImages);
 }
@@ -79,22 +85,24 @@ const getMimeTypeFromExtension = (filename) => {
   return types[ext] || "application/octet-stream";
 };
 
-export const loadImagesFromServer = async (imageList) => {
+export const loadImagesFromServer = async (
+  imageList,
+  { cacheBust = true } = {}
+) => {
   const imageObjs = await Promise.all(
     imageList.map(async (img, index) => {
       try {
-        const response = await fetch(img.filePath);
+        const bustParam = cacheBust ? `?t=${Date.now()}` : "";
+        const fetchUrl = `${img.filePath}${bustParam}`;
+
+        const response = await fetch(fetchUrl);
         const blob = await response.blob();
 
-        // Get file extension & fallback type
         const fileExt = img.fileName?.split(".").pop()?.toLowerCase();
         const fallbackMime = getMimeTypeFromExtension(img.fileName);
         const actualMime = blob.type || fallbackMime;
 
-        // Fix filename extension if blob is not matching expected
         let fixedFileName = img.fileName;
-
-        // Case: webp was converted to jpg on save
         if (fileExt === "webp" && actualMime === "image/jpeg") {
           fixedFileName = img.fileName.replace(/\.webp$/, ".jpg");
         }
@@ -118,5 +126,5 @@ export const loadImagesFromServer = async (imageList) => {
     })
   );
 
-  return imageObjs.filter(Boolean); // Remove failed items
+  return imageObjs.filter(Boolean);
 };

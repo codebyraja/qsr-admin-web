@@ -3,6 +3,8 @@ import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { API_BASE_URL } from "../../environment";
 import { toast } from "react-toastify";
 import { PlusCircle, X } from "feather-icons-react/build/IconComponents";
+import { loadImagesFromServer } from "../../utils/common";
+import Loader from "../loader/loader";
 
 const initialFormState = {
   name: "",
@@ -10,7 +12,6 @@ const initialFormState = {
   status: true,
   masterType: 5,
   users: "admin",
-  images: [""],
 };
 
 const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
@@ -22,20 +23,49 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
 
   useEffect(() => {
     if (isEditMode && selectedRecord) {
-      setFormData({
-        name: selectedRecord.name || "",
-        printName: selectedRecord.printName || "",
-        status: selectedRecord.status || true,
-        masterType: 5,
-        users: selectedRecord.users || "admin",
-        images: selectedRecord.images || [""],
-      });
-      setImages(selectedRecord.images?.[0] || null);
+      fetchProductDetails(selectedRecord?.id);
     } else {
       setFormData(initialFormState);
       setImages(null);
     }
-  }, [selectedRecord]);
+  }, [isEditMode, selectedRecord]);
+
+  const fetchProductDetails = async (code) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/GetMasterDetails/5?code=${code}`
+      );
+      const result = await res.json();
+      // console.log("data", result);
+      const data = result?.data[0];
+
+      if (!data) {
+        toast.error("No data found for the selected category.");
+      } else {
+        console.log("Fetched data for edit mode:", result);
+      }
+      const formatted = {
+        ...initialFormState,
+        name: data?.name || "",
+        printName: data?.printName || "",
+        status: data?.isActive || true,
+        masterType: data?.masterType || 5,
+        users: data?.users || "admin",
+      };
+
+      setFormData(formatted);
+      const imagesFromServer = await loadImagesFromServer(
+        data?.imageList || [],
+        { cacheBust: true }
+      );
+      setImages(imagesFromServer[0] || null);
+    } catch (error) {
+      toast.error("Failed to fetch product details.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -85,91 +115,65 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Form onSubmit={handleSubmit}>
-        {/* <Modal.Header
-          closeButton
-          style={{ paddingTop: "1rem", paddingBottom: "1rem" }}
-        >
-          <Modal.Title>
-            {isEditMode ? "Edit Category" : "Add Category"}
-          </Modal.Title> */}
-        <Modal.Header
+    <>
+      {isLoading && <Loader />}
+      <Modal show={show} onHide={handleClose} centered>
+        <Form onSubmit={handleSubmit}>
+          <Modal.Header>
+            <Modal.Title>
+              {isEditMode ? "Edit Category" : "Add Category"}
+            </Modal.Title>
+            <button
+              type="button"
+              className="modal-close-button"
+              aria-label="Close"
+              onClick={handleClose}
+            >
+              <X size={12} />
+            </button>
+          </Modal.Header>
 
-        // style={{ paddingTop: "1rem", paddingBottom: "1rem" }}
-        >
-          <Modal.Title>
-            {isEditMode ? "Edit Category" : "Add Category"}
-          </Modal.Title>
-          <button
-            type="button"
-            className="btn-close"
-            aria-label="Close"
-            onClick={handleClose}
-            style={{
-              width: "0.85rem",
-              height: "0.85rem",
-              padding: "0.25rem",
-            }}
-          ></button>
-        </Modal.Header>
-        {/* </Modal.Header> */}
+          <Modal.Body>
+            {/* Image Upload */}
+            <div className="mb-3">
+              <label className="form-label">Avatar</label>
+              <div className="profile-pic-upload mb-2">
+                <div className="profile-pic">
+                  {images ? (
+                    <>
+                      <img
+                        src={
+                          images &&
+                          typeof images === "object" &&
+                          images instanceof File
+                            ? URL.createObjectURL(images)
+                            : images.preview
+                        }
+                        alt="Preview"
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-danger remove-image-button"
+                        onClick={() => {
+                          setImages(null);
+                          if (fileInputRef.current)
+                            fileInputRef.current.value = "";
+                        }}
+                      >
+                        <X size={12} />
+                      </button>
+                    </>
+                  ) : (
+                    <div className="d-flex align-items-center">
+                      <PlusCircle className="me-2" />
+                      <span>Profile Photo</span>
+                    </div>
+                  )}
+                </div>
 
-        <Modal.Body>
-          {/* Image Upload */}
-          <div className="mb-3">
-            <label className="form-label">Avatar</label>
-            <div className="profile-pic-upload mb-2">
-              <div className="profile-pic position-relative">
-                {images ? (
-                  <>
-                    <img
-                      src={
-                        typeof images === "string"
-                          ? images
-                          : URL.createObjectURL(images)
-                      }
-                      alt="Preview"
-                      style={{
-                        width: 100,
-                        height: 100,
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                      }}
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-danger position-absolute rounded-circle d-flex align-items-center justify-content-center"
-                      style={{
-                        width: "22px",
-                        height: "22px",
-                        top: "-6px",
-                        right: "-6px",
-                        padding: 0,
-                        zIndex: 2,
-                      }}
-                      onClick={() => {
-                        setImages(null);
-                        if (fileInputRef.current)
-                          fileInputRef.current.value = "";
-                      }}
-                    >
-                      <X size={12} />
-                    </button>
-                  </>
-                ) : (
-                  <div className="d-flex align-items-center">
-                    <PlusCircle className="me-2" />
-                    <span>Profile Photo</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="image-upload mb-0">
                 <input
                   type="file"
-                  className="form-control"
+                  className="form-control mt-2"
                   ref={fileInputRef}
                   onChange={handleImageChange}
                   accept="image/*"
@@ -177,70 +181,70 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
                 />
               </div>
             </div>
-          </div>
 
-          {/* Category */}
-          <Form.Group className="mb-3">
-            <Form.Label>
-              Category<span className="text-danger ms-1">*</span>
-            </Form.Label>
-            <Form.Control
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
+            {/* Category */}
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Category<span className="text-danger ms-1">*</span>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-          {/* Print Name */}
-          <Form.Group className="mb-3">
-            <Form.Label>
-              Print Name<span className="text-danger ms-1">*</span>
-            </Form.Label>
-            <Form.Control
-              type="text"
-              name="printName"
-              value={formData.printName}
-              onChange={handleChange}
-              required
-            />
-          </Form.Group>
+            {/* Print Name */}
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Print Name<span className="text-danger ms-1">*</span>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="printName"
+                value={formData.printName}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-          {/* Status */}
-          <Form.Group className="d-flex justify-content-between align-items-center">
-            <Form.Label className="mb-0">
-              Status<span className="text-danger ms-1">*</span>
-            </Form.Label>
-            <Form.Check
-              type="switch"
-              id="statusToggle"
-              name="status"
-              checked={formData.status}
-              onChange={handleChange}
-            />
-          </Form.Group>
-        </Modal.Body>
+            {/* Status */}
+            <Form.Group className="d-flex justify-content-between align-items-center">
+              <Form.Label className="mb-0">
+                Status<span className="text-danger ms-1">*</span>
+              </Form.Label>
+              <Form.Check
+                type="switch"
+                id="statusToggle"
+                name="status"
+                checked={formData.status}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Modal.Body>
 
-        <Modal.Footer className="d-flex justify-content-end gap-2">
-          <Button variant="secondary" onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Spinner animation="border" size="sm" className="me-2" />
-                {isEditMode ? "Updating..." : "Adding..."}
-              </>
-            ) : isEditMode ? (
-              "Update"
-            ) : (
-              "Add"
-            )}
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+          <Modal.Footer className="d-flex justify-content-end gap-2">
+            <Button variant="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  {isEditMode ? "Updating..." : "Adding..."}
+                </>
+              ) : isEditMode ? (
+                "Update"
+              ) : (
+                "Add"
+              )}
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    </>
   );
 };
 

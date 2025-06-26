@@ -25,7 +25,7 @@ const TableTopFilter = () => {
                 Inactive
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link to="#" className="dropdown-item rounded-1">
                 Shoe
               </Link>
@@ -34,7 +34,7 @@ const TableTopFilter = () => {
               <Link to="#" className="dropdown-item rounded-1">
                 Electronics
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
         <div className="dropdown">

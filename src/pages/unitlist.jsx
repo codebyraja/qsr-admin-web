@@ -1,46 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import CommonTableHeader from "../core/common/table/tableHeader";
 import TableTopFilter from "../core/common/table/tableTopFilter";
 import CommonTable from "../core/common/table/commonTable";
 import CommonFooter from "../core/common/footer/commonFooter";
-import CommonDeleteModal from "../core/common/modal/commonDeleteModal";
-import AddUnits from "../components/modals/addUnit";
 import { API_BASE_URL } from "../environment";
 import { toast } from "react-toastify";
 import Loader from "../components/loader/loader";
 import ProductActionButtons from "../components/ProductActionButtons";
-import { all_routes } from "../Router/all_routes";
+import AddUnit from "../components/modals/addUnit";
+import CommonDeleteModal from "../components/CommonDeleteModal";
 
 const UnitList = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState(null);
-  const navigate = useNavigate();
-  const route = all_routes;
-
-  const handleEditClick = (record) => {
-    // setMode("modify");
-    setSelectedRecord(record);
-    navigate(route.addproduct, { state: { product: record } });
-  };
-
-  const handleDeleteClick = (record) => {
-    // setMode("delete");
-    setSelectedRecord(record);
-    // Open your delete confirmation modal here
-  };
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingItem, setDeletingItem] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const columns = [
     {
       title: "Category",
       dataIndex: "name",
-      rener: (_, item) => {
-        <div className="d-flex align-items-center">
-          <span>{item}</span>
-        </div>;
-      },
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
@@ -59,59 +41,94 @@ const UnitList = () => {
       sorter: (a, b) => new Date(a.creationTime) - new Date(b.creationTime),
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (_, item) => (
+      title: "Actions",
+      dataIndex: "actions",
+      render: (_, record) => (
         <ProductActionButtons
-          handleEditClick={() => handleEditClick(item)}
-          handleDeleteClick={() => handleDeleteClick(item)}
-          deleteModalId="delete-product-modal"
+          handleEditClick={() => handleEdit(record)}
+          handleDeleteClick={() => handleDeleteClick(record)}
           showView={false}
         />
       ),
     },
-    {
-      type: "actions",
-      actions: ["edit", "delete"],
-    },
   ];
-
-  useEffect(() => {
-    fetchCategories();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      const resp = await fetch(`${API_BASE_URL}/GetMasterDetails/8`); // NOTE: http not https
-      const result = await resp.json();
-      console.log("Parsed JSON result: ", result);
-
-      if (!result.data || !Array.isArray(result.data)) {
-        throw new Error("API returned invalid or empty data.");
-      }
-
-      const unit = result.data.map((item) => ({
-        id: item.code,
-        name: item.name || "Unnamed",
-        printName: item.printName ?? "N/A",
-        status: item.isActive ? "Active" : "Inactive",
-        creationBy: item.users ?? "N/A",
-        creationTime: item.creationTime ?? "N/A",
-      }));
-
-      setTableData(unit);
-    } catch (error) {
-      toast.error("Failed to load categories.");
+      const resp = await fetch(`${API_BASE_URL}/GetMasterDetails/8`);
+      const res = await resp.json();
+      if (!Array.isArray(res.data)) throw new Error();
+      console.log("Fetched categories:", res.data);
+      setTableData(
+        res.data.map((item) => ({
+          id: item.code,
+          name: item.name,
+          printName: item.printName,
+          status: item.isActive,
+          creationBy: item.users,
+          creationTime: item.creationTime,
+        }))
+      );
+    } catch {
+      toast.error("Failed to load categories");
     } finally {
       setLoading(false);
     }
   };
 
-  const openModal = () => {
-    // Logic to open modal can be added here
-    // For example, you can dispatch an action or set a state to trigger the modal
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleEdit = (record) => {
+    setSelectedItem(record);
+    setIsModalVisible(true);
+  };
+
+  const handleAdd = () => {
+    setSelectedItem(null); // for Add mode
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    setSelectedItem(null);
+  };
+
+  const handleAddedOrUpdated = () => {
+    fetchCategories();
+    handleModalClose();
+  };
+
+  const handleDeleteClick = (record) => {
+    setDeletingItem(record);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingItem?.id) return;
+    setIsDeleting(true);
+    try {
+      const resp = await fetch(
+        `${API_BASE_URL}/DeleteMasterByTypeAndCode/8/${deletingItem?.id}`,
+        { method: "DELETE" }
+      );
+      const res = await resp.json();
+
+      if (res.status === 1) {
+        toast.success(res.msg || "Unit deleted successfully");
+        fetchCategories();
+      } else {
+        toast.error(res.msg || "Failed to delete unit");
+      }
+    } catch {
+      toast.error("Error deleting unit");
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+      setDeletingItem(null);
+    }
   };
 
   return (
@@ -122,17 +139,34 @@ const UnitList = () => {
           <CommonTableHeader
             title="Unit"
             modalId="add-units"
-            onAdd={() => openModal()}
+            onAddClick={() => handleAdd()}
           />
           <div className="card table-list-card">
             <TableTopFilter />
-            <CommonTable columns={columns} data={tableData} />
+            <CommonTable
+              columns={columns}
+              data={tableData}
+              rowKey={(record) => record.id}
+            />
           </div>
         </div>
         <CommonFooter />
+
+        <AddUnit
+          selectedRecord={selectedItem}
+          onSuccess={handleAddedOrUpdated}
+          show={isModalVisible}
+          handleClose={handleModalClose}
+        />
+        <CommonDeleteModal
+          handleShow={showDeleteModal}
+          handleClose={() => setShowDeleteModal(false)}
+          handleConfirmDelete={confirmDelete}
+          title="Delete Category"
+          message={`Are you sure you want to delete the unit : "${deletingItem?.name}"?`}
+          isDeleting={isDeleting}
+        />
       </div>
-      <AddUnits />
-      <CommonDeleteModal />
     </>
   );
 };

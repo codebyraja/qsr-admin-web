@@ -20,6 +20,13 @@ $font: 'Inter', 'Segoe UI', sans-serif;
   }
 }
 
+body {
+  font-family: $font;
+  // background: $bg;
+  // color: $text-dark;
+  margin: 0;
+  padding: 0;
+}
 // Delay Animations
 .fade-in {
   opacity: 0;

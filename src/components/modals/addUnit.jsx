@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useState, useEffect, useRef } from "react";
+import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { API_BASE_URL } from "../../environment";
+import { toast } from "react-toastify";
+import { PlusCircle, X } from "feather-icons-react/build/IconComponents";
+import { loadImagesFromServer } from "../../utils/common";
 import Loader from "../loader/loader";
 
 const initialFormState = {
@@ -9,27 +12,55 @@ const initialFormState = {
   status: true,
   masterType: 8,
   users: "admin",
-  images: [""],
 };
 
-const AddUnits = () => {
+const AddUnit = ({ selectedRecord, onSuccess, show, handleClose }) => {
   const [formData, setFormData] = useState(initialFormState);
   const [isLoading, setIsLoading] = useState(false);
-  const modalRef = useRef(null);
+  const isEditMode = Boolean(selectedRecord);
 
-  // Reset form when modal opens
   useEffect(() => {
-    const resetForm = () => setFormData(initialFormState);
-    const modal = document.getElementById("add-units");
-    modalRef.current = modal;
+    if (isEditMode && selectedRecord) {
+      fetchProductDetails(selectedRecord?.id);
+    } else {
+      setFormData(initialFormState);
+    }
+  }, [isEditMode, selectedRecord]);
 
-    modal?.addEventListener("show.bs.modal", resetForm);
-    return () => modal?.removeEventListener("show.bs.modal", resetForm);
-  }, []);
+  const fetchProductDetails = async (code) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/GetMasterDetails/8?code=${code}`
+      );
+      const result = await res.json();
+      // console.log("data", result);
+      const data = result?.data[0];
 
-  // Handle input changes
-  const handleChange = ({ target }) => {
-    const { name, value, type, checked } = target;
+      if (!data) {
+        toast.error("No data found for the selected unit.");
+      } else {
+        console.log("Fetched data for edit mode:", result);
+      }
+      const formatted = {
+        ...initialFormState,
+        name: data?.name || "",
+        printName: data?.printName || "",
+        status: data?.isActive || true,
+        masterType: data?.masterType || 5,
+        users: data?.users || "admin",
+      };
+
+      setFormData(formatted);
+    } catch (error) {
+      toast.error("Failed to fetch product details.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -40,30 +71,31 @@ const AddUnits = () => {
     e.preventDefault();
     if (isLoading) return;
     setIsLoading(true);
-
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("Name", formData.name);
-      formDataToSend.append("PrintName", formData.printName);
-      formDataToSend.append("Status", formData.status);
-      formDataToSend.append("MasterType", formData.masterType);
-      formDataToSend.append("Users", formData.users);
-      formDataToSend.append("Images", formData.images[0]);
+      const fd = new FormData();
+      fd.append("Name", formData.name);
+      fd.append("PrintName", formData.printName);
+      fd.append("Status", formData.status);
+      fd.append("MasterType", 8);
+      fd.append("Users", "admin");
+      fd.append("Images", []);
+      if (isEditMode) fd.append("Code", selectedRecord?.id);
 
-      const response = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
+      const res = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
         method: "POST",
-        body: formDataToSend,
+        body: fd,
       });
 
-      const result = await response.json();
-      if (result?.status === 1) {
-        setFormData(initialFormState);
-        toast.success(result?.msg || "Category added successfully!");
+      const result = await res.json();
+      if (result.status === 1) {
+        toast.success(isEditMode ? "Unit updated" : "Unit added");
+        onSuccess();
+        handleClose();
       } else {
-        toast.error(result?.msg || "Something went wrong");
+        toast.error(result.msg || "Operation failed");
       }
-    } catch (error) {
-      toast.error("Failed to add category.");
+    } catch {
+      toast.error("Server error");
     } finally {
       setIsLoading(false);
     }
@@ -72,95 +104,85 @@ const AddUnits = () => {
   return (
     <>
       {isLoading && <Loader />}
-      <div className="modal fade" id="add-units">
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="page-wrapper-new p-0">
-              <div className="content">
-                <div className="modal-header">
-                  <h4 className="modal-title">Add Unit</h4>
-                  <button
-                    type="button"
-                    className="close bg-danger text-white fs-16"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <span aria-hidden="true">×</span>
-                  </button>
-                </div>
+      <Modal show={show} onHide={handleClose} centered>
+        <Form onSubmit={handleSubmit}>
+          <Modal.Header>
+            <Modal.Title>{isEditMode ? "Edit Unit" : "Add Unit"}</Modal.Title>
+            <button
+              type="button"
+              className="modal-close-button"
+              aria-label="Close"
+              onClick={handleClose}
+            >
+              <X size={12} />
+            </button>
+          </Modal.Header>
 
-                <form onSubmit={handleSubmit}>
-                  <div className="modal-body">
-                    <div className="mb-3">
-                      <label className="form-label">
-                        Unit<span className="text-danger ms-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        className="form-control"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
+          <Modal.Body>
+            {/* Unit */}
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Unit<span className="text-danger ms-1">*</span>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-                    <div className="mb-3">
-                      <label className="form-label">
-                        Print Name<span className="text-danger ms-1">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="printName"
-                        className="form-control"
-                        value={formData.printName}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div>
+            {/* Print Name */}
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Print Name<span className="text-danger ms-1">*</span>
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="printName"
+                value={formData.printName}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-                    <div className="mb-0 d-flex justify-content-between align-items-center">
-                      <label className="form-label mb-0">
-                        Status<span className="text-danger ms-1">*</span>
-                      </label>
-                      <div className="status-toggle modal-status">
-                        <input
-                          type="checkbox"
-                          id="unit-status"
-                          name="status"
-                          className="check"
-                          checked={formData.status}
-                          onChange={handleChange}
-                        />
-                        <label htmlFor="unit-status" className="checktoggle" />
-                      </div>
-                    </div>
-                  </div>
+            {/* Status */}
+            <Form.Group className="d-flex justify-content-between align-items-center">
+              <Form.Label className="mb-0">
+                Status<span className="text-danger ms-1">*</span>
+              </Form.Label>
+              <Form.Check
+                type="switch"
+                id="statusToggle"
+                name="status"
+                checked={formData.status}
+                onChange={handleChange}
+              />
+            </Form.Group>
+          </Modal.Body>
 
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-secondary me-2"
-                      data-bs-dismiss="modal"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="btn btn-primary"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Saving..." : "Add Unit"}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+          <Modal.Footer className="d-flex justify-content-end gap-2">
+            <Button variant="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  {isEditMode ? "Updating..." : "Adding..."}
+                </>
+              ) : isEditMode ? (
+                "Update"
+              ) : (
+                "Add"
+              )}
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
     </>
   );
 };
 
-export default AddUnits;
+export default AddUnit;
