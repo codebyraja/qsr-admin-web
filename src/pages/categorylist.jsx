@@ -24,6 +24,55 @@ const CategoryList = () => {
   const [deletingItem, setDeletingItem] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  console.log("CategoryList.js loaded", tableData);
+
+  const columns = [
+    {
+      title: "Category",
+      dataIndex: "name",
+      render: (_, record) => (
+        <TableColumnImageText
+          imageSrc={record?.categoryImg}
+          text={record?.name}
+        />
+      ),
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Print Name",
+      dataIndex: "printName",
+      sorter: (a, b) => a.printName.localeCompare(b.printName),
+    },
+    {
+      title: "Creation By",
+      dataIndex: "creationBy",
+    },
+    {
+      title: "Creation Time",
+      dataIndex: "creationTime",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      render: (text) => (
+        <span className="badge table-badge bg-success fw-medium fs-10">
+          {text}
+        </span>
+      ),
+      sorter: (a, b) => a.status.length - b.status.length,
+    },
+    {
+      title: "Actions",
+      render: (_, record) => (
+        <ProductActionButtons
+          handleEditClick={() => handleEdit(record)}
+          handleDeleteClick={() => handleDeleteClick(record)}
+          showView={false}
+        />
+      ),
+    },
+  ];
+
   const fetchCategories = async () => {
     setLoading(true);
     try {
@@ -37,7 +86,7 @@ const CategoryList = () => {
         id: item.code,
         name: item.name,
         printName: item.printName,
-        status: item.isActive,
+        status: item.isActive ? "Active" : "Inactive",
         creationBy: item.users,
         creationTime: item.creationTime,
         categoryImg: item.imageList?.[0]?.filePath,
@@ -107,43 +156,6 @@ const CategoryList = () => {
     }
   };
 
-  const columns = [
-    {
-      title: "Category",
-      dataIndex: "name",
-      render: (_, record) => (
-        <TableColumnImageText
-          imageSrc={record?.categoryImg}
-          text={record?.name}
-        />
-      ),
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Print Name",
-      dataIndex: "printName",
-      sorter: (a, b) => a.printName.localeCompare(b.printName),
-    },
-    {
-      title: "Creation By",
-      dataIndex: "creationBy",
-    },
-    {
-      title: "Creation Time",
-      dataIndex: "creationTime",
-    },
-    {
-      title: "Actions",
-      render: (_, record) => (
-        <ProductActionButtons
-          handleEditClick={() => handleEdit(record)}
-          handleDeleteClick={() => handleDeleteClick(record)}
-          showView={false}
-        />
-      ),
-    },
-  ];
-
   const dispatch = useDispatch();
   const isHeaderCollapsed = useSelector(
     (state) => state.rootReducer.toggle_header
@@ -178,12 +190,16 @@ const CategoryList = () => {
           />
           <div className="card table-list-card">
             <TableToolbar />
-            <CommonTable
-              columns={columns}
-              data={tableData}
-              loading={loading}
-              rowKey={(record) => record.id}
-            />
+            <div className="card-body">
+              <div className="table-responsive category-table">
+                <CommonTable
+                  columns={columns}
+                  data={tableData}
+                  loading={loading}
+                  rowKey={(record) => record.id}
+                />
+              </div>
+            </div>
           </div>
         </div>
 

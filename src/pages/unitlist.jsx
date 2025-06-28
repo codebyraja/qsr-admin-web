@@ -47,6 +47,16 @@ const UnitList = () => {
       sorter: (a, b) => new Date(a.creationTime) - new Date(b.creationTime),
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      render: (text) => (
+        <span className="badge table-badge bg-success fw-medium fs-10">
+          {text}
+        </span>
+      ),
+      sorter: (a, b) => a.status.length - b.status.length,
+    },
+    {
       title: "Actions",
       dataIndex: "actions",
       render: (_, record) => (
@@ -65,13 +75,13 @@ const UnitList = () => {
       const resp = await fetch(`${API_BASE_URL}/GetMasterDetails/8`);
       const res = await resp.json();
       if (!Array.isArray(res.data)) throw new Error();
-      console.log("Fetched categories:", res.data);
+      // console.log("Fetched categories:", res.data);
       setTableData(
         res.data.map((item) => ({
           id: item.code,
           name: item.name,
           printName: item.printName,
-          status: item.isActive,
+          status: item.isActive ? "Active" : "Inactive",
           creationBy: item.users,
           creationTime: item.creationTime,
         }))
