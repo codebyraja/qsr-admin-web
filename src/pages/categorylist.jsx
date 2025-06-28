@@ -1,16 +1,17 @@
 // CategoryList.js
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
-import CommonTableHeader from "../core/common/table/tableHeader";
-import TableTopFilter from "../core/common/table/tableTopFilter";
-import CommonTable from "../core/common/table/commonTable";
+import CommonTable from "../components/table/commonTable";
 import AddCategoryModal from "../components/modals/addCategory";
 import Loader from "../components/loader/loader";
 import { API_BASE_URL } from "../environment";
-import ProductActionButtons from "../components/ProductActionButtons";
+import ProductActionButtons from "../components/table/TableActionButtons";
 import TableColumnImageText from "../components/TableColumnImageText";
-import CommonDeleteModal from "../components/CommonDeleteModal";
+import CommonDeleteModal from "../components/modals/deleteRecord";
+import TableHeaderActions from "../components/table/TableHeaderActions";
+import { useDispatch, useSelector } from "react-redux";
+import { setToogleHeader } from "../core/redux/action";
+import TableToolbar from "../components/table/TableToolbar";
 
 const MASTER_TYPE_CATEGORY = 5;
 
@@ -54,7 +55,7 @@ const CategoryList = () => {
     fetchCategories();
   }, []);
 
-  const handleAdd = () => {
+  const onAddClick = () => {
     setSelectedItem(null);
     setShowFormModal(true);
   };
@@ -143,14 +144,40 @@ const CategoryList = () => {
     },
   ];
 
+  const dispatch = useDispatch();
+  const isHeaderCollapsed = useSelector(
+    (state) => state.rootReducer.toggle_header
+  );
+
+  const handleCollapseToggle = (e) => {
+    e.preventDefault();
+    dispatch(setToogleHeader(!isHeaderCollapsed));
+  };
+
   return (
     <>
       {loading && <Loader />}
       <div className="page-wrapper">
         <div className="content">
-          <CommonTableHeader title="Category" onAddClick={handleAdd} />
+          <TableHeaderActions
+            title="Category List"
+            subtitle="Manage your categories"
+            addButtonLabel="Add New Category"
+            // addButtonRoute="/add-category"
+            onAddClick={onAddClick}
+            showImport={false}
+            exportToPdf={() => {
+              toast.info("Export to PDF is not implemented yet");
+            }}
+            exportToExcel={() => {
+              toast.info("Export to Excel is not implemented yet");
+            }}
+            onRefreshClick={fetchCategories}
+            onCollapseToggle={handleCollapseToggle}
+            isHeaderCollapsed={isHeaderCollapsed}
+          />
           <div className="card table-list-card">
-            <TableTopFilter />
+            <TableToolbar />
             <CommonTable
               columns={columns}
               data={tableData}

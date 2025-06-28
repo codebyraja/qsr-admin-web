@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
-import CommonTableHeader from "../core/common/table/tableHeader";
-import TableTopFilter from "../core/common/table/tableTopFilter";
-import CommonTable from "../core/common/table/commonTable";
-import CommonFooter from "../core/common/footer/commonFooter";
 import { API_BASE_URL } from "../environment";
 import { toast } from "react-toastify";
 import Loader from "../components/loader/loader";
-import ProductActionButtons from "../components/ProductActionButtons";
 import AddUnit from "../components/modals/addUnit";
-import CommonDeleteModal from "../components/CommonDeleteModal";
+import CommonDeleteModal from "../components/modals/deleteRecord";
+import CommonTable from "../components/table/commonTable";
+import TableActionButtons from "../components/table/TableActionButtons";
+import TableToolbar from "../components/table/TableToolbar";
+import TableHeaderActions from "../components/table/TableHeaderActions";
+import { useDispatch, useSelector } from "react-redux";
+import { setToogleHeader } from "../core/redux/action";
+import CommonFooter from "../core/common/footer/commonFooter";
 
 const UnitList = () => {
+  const dispatch = useDispatch();
+  const isHeaderCollapsed = useSelector(
+    (state) => state.rootReducer.toggle_header
+  );
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -44,7 +50,7 @@ const UnitList = () => {
       title: "Actions",
       dataIndex: "actions",
       render: (_, record) => (
-        <ProductActionButtons
+        <TableActionButtons
           handleEditClick={() => handleEdit(record)}
           handleDeleteClick={() => handleDeleteClick(record)}
           showView={false}
@@ -86,7 +92,7 @@ const UnitList = () => {
     setIsModalVisible(true);
   };
 
-  const handleAdd = () => {
+  const onAddClick = () => {
     setSelectedItem(null); // for Add mode
     setIsModalVisible(true);
   };
@@ -133,18 +139,34 @@ const UnitList = () => {
     }
   };
 
+  const handleCollapseToggle = (e) => {
+    e.preventDefault();
+    dispatch(setToogleHeader(!isHeaderCollapsed));
+  };
+
   return (
     <>
       {loading && <Loader />}
       <div className="page-wrapper">
         <div className="content">
-          <CommonTableHeader
-            title="Unit"
-            modalId="add-units"
-            onAddClick={() => handleAdd()}
+          <TableHeaderActions
+            title="Unit List"
+            subtitle="Manage your units"
+            addButtonLabel="Add New Unit"
+            onAddClick={onAddClick}
+            showImport={false}
+            exportToPdf={() => {
+              toast.info("Export to PDF is not implemented yet");
+            }}
+            exportToExcel={() => {
+              toast.info("Export to Excel is not implemented yet");
+            }}
+            onRefreshClick={fetchCategories}
+            onCollapseToggle={handleCollapseToggle}
+            isHeaderCollapsed={isHeaderCollapsed}
           />
           <div className="card table-list-card">
-            <TableTopFilter />
+            <TableToolbar />
             <CommonTable
               columns={columns}
               data={tableData}

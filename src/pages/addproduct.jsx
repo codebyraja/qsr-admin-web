@@ -263,8 +263,13 @@ const AddProduct = () => {
               <h6>{product ? "Edit existing product" : "Add a new product"}</h6>
             </div>
             <ul className="table-top-head d-flex gap-2">
-              <RefreshIcon />
-              <CollapesIcon />
+              <li>
+                <RefreshIcon />
+              </li>
+              <li>
+                <CollapesIcon />
+              </li>
+
               <li>
                 <Link to={productlist} className="btn btn-secondary">
                   <ArrowLeft className="me-2" /> Back to Products

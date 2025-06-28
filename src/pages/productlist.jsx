@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Navigate } from "react-router-dom";
-import { RotateCcw, ChevronUp, Download } from "react-feather";
 import { Table } from "antd";
 import { toast } from "react-toastify";
-
-import TooltipIcon from "../components/TooltipIcon";
-import TableColumnImageText from "../components/TableColumnImageText";
-import ProductActionButtons from "../components/ProductActionButtons";
-import ImageWithBasePath from "../core/img/imagewithbasebath";
+import TableColumnImageText from "../components/table/ImageTextCell";
+import ProductActionButtons from "../components/table/TableActionButtons";
 import Loader from "../components/loader/loader";
 
 import { all_routes } from "../Router/all_routes";
 import { setToogleHeader } from "../core/redux/action";
 import { API_BASE_URL } from "../environment";
 import { useNavigate } from "react-router-dom";
-import CommonDeleteModal from "../components/CommonDeleteModal";
+import CommonDeleteModal from "../components/modals/deleteRecord";
+import TableHeaderActions from "../components/table/TableHeaderActions";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -173,64 +169,22 @@ const ProductList = () => {
       {isLoading && <Loader />}
       <div className="page-wrapper">
         <div className="content">
-          <div className="page-header">
-            <div className="add-item d-flex">
-              <div className="page-title">
-                <h4>Product List</h4>
-                <h6>Manage your products</h6>
-              </div>
-            </div>
-
-            <ul className="table-top-head">
-              <li>
-                <TooltipIcon tooltip="Pdf">
-                  <ImageWithBasePath src="assets/img/icons/pdf.svg" alt="pdf" />
-                </TooltipIcon>
-              </li>
-              <li>
-                <TooltipIcon tooltip="Excel">
-                  <ImageWithBasePath
-                    src="assets/img/icons/excel.svg"
-                    alt="excel"
-                  />
-                </TooltipIcon>
-              </li>
-              <li>
-                <TooltipIcon tooltip="Refresh">
-                  <RotateCcw />
-                </TooltipIcon>
-              </li>
-              <li>
-                <TooltipIcon tooltip="Collapse">
-                  <Link
-                    id="collapse-header"
-                    className={isHeaderCollapsed ? "active" : ""}
-                    onClick={handleCollapseToggle}
-                  >
-                    <ChevronUp />
-                  </Link>
-                </TooltipIcon>
-              </li>
-            </ul>
-
-            <div className="page-btn">
-              <Link to={route.addproduct} className="btn btn-primary">
-                <i className="ti ti-circle-plus me-1"></i> Add New Product
-              </Link>
-            </div>
-            <div className="page-btn import">
-              <Link
-                to="#"
-                className="btn btn-secondary color"
-                data-bs-toggle="modal"
-                data-bs-target="#view-notes"
-              >
-                <Download className="feather me-2" />
-                Import Product
-              </Link>
-            </div>
-          </div>
-
+          <TableHeaderActions
+            title="Product List"
+            subtitle="Manage your products"
+            addButtonLabel="Add New Product"
+            onAddClick={() => navigate(route.addproduct)}
+            showImport={true}
+            exportToPdf={() => {
+              toast.info("Export to PDF is not implemented yet");
+            }}
+            exportToExcel={() => {
+              toast.info("Export to Excel is not implemented yet");
+            }}
+            onRefreshClick={fetchCategories}
+            onCollapseToggle={handleCollapseToggle}
+            isHeaderCollapsed={isHeaderCollapsed}
+          />
           <div className="card table-list-card">
             <div className="card-body">
               <div className="table-responsive">
