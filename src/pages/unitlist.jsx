@@ -50,7 +50,11 @@ const UnitList = () => {
       title: "Status",
       dataIndex: "status",
       render: (text) => (
-        <span className="badge table-badge bg-success fw-medium fs-10">
+        <span
+          className={`badge table-badge ${
+            text == "Active" ? `bg-success` : `bg-danger`
+          } fw-medium fs-10`}
+        >
           {text}
         </span>
       ),

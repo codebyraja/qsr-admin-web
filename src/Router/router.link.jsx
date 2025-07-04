@@ -182,7 +182,7 @@ import Error500 from "../feature-module/pages/errorpages/error500";
 import Blankpage from "../feature-module/pages/blankpage";
 import Comingsoon from "../feature-module/pages/comingsoon";
 import Undermaintainence from "../feature-module/pages/undermaintainence";
-import Users from "../feature-module/usermanagement/users";
+
 import RolesPermissions from "../feature-module/usermanagement/rolespermissions";
 import Permissions from "../feature-module/usermanagement/permissions";
 import DeleteAccount from "../feature-module/usermanagement/deleteaccount";
@@ -287,6 +287,7 @@ import Activities from "../feature-module/pages/activities";
 import Pricing from "../feature-module/pages/pricing";
 import Contacts from "../feature-module/Application/contacts";
 import ProductDetail from "../pages/productdetail";
+import Users from "../pages/users";
 
 export const publicRoutes = [
   {

@@ -11,9 +11,8 @@ const AllRoutes = () => {
  
 
   return (
-    <div>
+    <>
       <Routes>
-        
         <Route element={<HeaderLayouts />}>
           {publicRoutes.map((route, id) => (
             <Route path={route.path} element={route.element} key={id} />
@@ -30,7 +29,7 @@ const AllRoutes = () => {
           ))}
         </Route>
       </Routes>
-    </div>
+    </>
   );
 };
 export default AllRoutes;

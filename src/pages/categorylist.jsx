@@ -6,12 +6,12 @@ import AddCategoryModal from "../components/modals/addCategory";
 import Loader from "../components/loader/loader";
 import { API_BASE_URL } from "../environment";
 import ProductActionButtons from "../components/table/TableActionButtons";
-import TableColumnImageText from "../components/TableColumnImageText";
 import CommonDeleteModal from "../components/modals/deleteRecord";
 import TableHeaderActions from "../components/table/TableHeaderActions";
 import { useDispatch, useSelector } from "react-redux";
 import { setToogleHeader } from "../core/redux/action";
 import TableToolbar from "../components/table/TableToolbar";
+import ImageTextCell from "../components/table/ImageTextCell";
 
 const MASTER_TYPE_CATEGORY = 5;
 
@@ -31,10 +31,7 @@ const CategoryList = () => {
       title: "Category",
       dataIndex: "name",
       render: (_, record) => (
-        <TableColumnImageText
-          imageSrc={record?.categoryImg}
-          text={record?.name}
-        />
+        <ImageTextCell imageSrc={record?.categoryImg} text={record?.name} />
       ),
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
@@ -55,7 +52,11 @@ const CategoryList = () => {
       title: "Status",
       dataIndex: "status",
       render: (text) => (
-        <span className="badge table-badge bg-success fw-medium fs-10">
+        <span
+          className={`badge table-badge ${
+            text == "Active" ? `bg-success` : `bg-danger`
+          } fw-medium fs-10`}
+        >
           {text}
         </span>
       ),

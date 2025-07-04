@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Modal, Button, Form, Spinner } from "react-bootstrap";
+import { Modal, Button, Form, Spinner, Col, Row } from "react-bootstrap";
 import { API_BASE_URL } from "../../environment";
 import { toast } from "react-toastify";
 import { PlusCircle, X } from "feather-icons-react/build/IconComponents";
@@ -75,7 +75,7 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
     }));
   };
 
-  const handleImageChange = (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) setImages(file);
   };
@@ -140,7 +140,12 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
               <div className="profile-pic-upload mb-2">
                 <div className="profile-pic">
                   {images ? (
-                    <>
+                    <div
+                      style={{
+                        position: "relative",
+                        display: "inline-block",
+                      }}
+                    >
                       <img
                         src={
                           images &&
@@ -162,23 +167,25 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
                       >
                         <X size={12} />
                       </button>
-                    </>
-                  ) : (
-                    <div className="d-flex align-items-center">
-                      <PlusCircle className="me-2" />
-                      <span>Profile Photo</span>
                     </div>
+                  ) : (
+                    <Form.Label
+                      htmlFor="upload-avatar"
+                      className="btn btn-outline-primary"
+                    >
+                      <PlusCircle className="me-2" /> Upload
+                    </Form.Label>
                   )}
+                  <Form.Control
+                    id="upload-avatar"
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    style={{ display: "none" }}
+                    required={!isEditMode}
+                  />
                 </div>
-
-                <input
-                  type="file"
-                  className="form-control mt-2"
-                  ref={fileInputRef}
-                  onChange={handleImageChange}
-                  accept="image/*"
-                  required={!isEditMode}
-                />
               </div>
             </div>
 
@@ -219,7 +226,7 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
                 type="switch"
                 id="statusToggle"
                 name="status"
-                checked={formData.status}
+                checked={formData?.status}
                 onChange={handleChange}
               />
             </Form.Group>

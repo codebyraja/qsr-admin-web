@@ -6,9 +6,11 @@ import { Link } from "react-router-dom";
 interface Props {
   title: string;
   subtitle?: string;
+  importLabel?: string;
   addButtonLabel?: string;
   addButtonRoute?: string;
   showImport?: boolean;
+  showImportModal?: () => void;
   exportToPdf?: () => void;
   exportToExcel?: () => void;
   onRefresh?: () => void;
@@ -26,10 +28,12 @@ interface Props {
 const TableHeaderActions: React.FC<Props> = ({
   title,
   subtitle,
+  importLabel,
   addButtonLabel,
   // addButtonRoute = "#",
   onAddClick = () => {},
   showImport = false,
+  showImportModal = () => {},
   exportToPdf = () => {},
   exportToExcel = () => {},
   onRefreshClick = () => {},
@@ -69,11 +73,12 @@ const TableHeaderActions: React.FC<Props> = ({
           <Link
             to="#"
             className="btn btn-secondary color"
-            data-bs-toggle="modal"
-            data-bs-target="#view-notes"
+            // data-bs-toggle="modal"
+            // data-bs-target="#view-notes"
+            onClick={showImportModal}
           >
             <Download className="feather me-2" />
-            Import 
+            {importLabel || "Import"}
           </Link>
         </div>
       )}

@@ -1,9 +1,13 @@
+import * as XLSX from "xlsx";
+
 // export function generateSlug(name) {
 //   return name
 //     .toLowerCase()
 //     .replace(/[^a-z0-9]+/g, "-") // Replace spaces and special chars with -
 //     .replace(/^-+|-+$/g, ""); // Remove leading/trailing -
 // }
+
+import { toast } from "react-toastify";
 
 export function generateSlug(name, options = {}) {
   const { separator = "-", lowercase = true } = options;

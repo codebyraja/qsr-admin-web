@@ -12,3 +12,8 @@ export const DISCOUNT_TYPES = [
   { value: 1, label: "Percentage" },
   { value: 2, label: "Cash" },
 ];
+
+export const IMPORT_OPT = [
+  { value: "product", label: "Import Product" },
+  { value: "stock", label: "Import Stock" },
+];

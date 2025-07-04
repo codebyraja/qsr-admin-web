@@ -12,6 +12,8 @@ import { API_BASE_URL } from "../environment";
 import { useNavigate } from "react-router-dom";
 import CommonDeleteModal from "../components/modals/deleteRecord";
 import TableHeaderActions from "../components/table/TableHeaderActions";
+import ImportProduct from "../components/modals/importproduct";
+import { IMPORT_OPT } from "../constants";
 
 const ProductList = () => {
   const dispatch = useDispatch();
@@ -27,6 +29,7 @@ const ProductList = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingItem, setDeletingItem] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
 
   const columns = [
     {
@@ -172,9 +175,11 @@ const ProductList = () => {
           <TableHeaderActions
             title="Product List"
             subtitle="Manage your products"
+            importLabel="Import Product"
             addButtonLabel="Add New Product"
             onAddClick={() => navigate(route.addproduct)}
             showImport={true}
+            showImportModal={() => setShowImportModal(true)}
             exportToPdf={() => {
               toast.info("Export to PDF is not implemented yet");
             }}
@@ -204,6 +209,14 @@ const ProductList = () => {
           title="Delete Product"
           message={`Are you sure you want to delete the product : "${deletingItem?.name}"?`}
           isDeleting={isDeleting}
+        />
+        <ImportProduct
+          title="Import Product"
+          label="Select Action"
+          isLoading={isLoading}
+          show={showImportModal}
+          actionOptions={IMPORT_OPT}
+          handleClose={() => setShowImportModal(false)}
         />
       </div>
     </>
