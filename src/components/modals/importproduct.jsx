@@ -39,6 +39,11 @@ const ImportProduct = ({
   };
 
   const handleFileChange = (event) => {
+    if (!selectedOption) {
+      toast.warning("Please select action.");
+      return;
+    }
+
     const file = event.target.files[0];
     if (file) {
       setSelectedFile(file);
@@ -72,7 +77,7 @@ const ImportProduct = ({
 
   return (
     <>
-      <Modal show={show} onHide={handleClose} centered >
+      <Modal show={show} onHide={handleClose} centered>
         <Modal.Header>
           <Modal.Title>{title}</Modal.Title>
           <button
@@ -122,6 +127,8 @@ const ImportProduct = ({
                       type="file"
                       accept=".xlsx,.xls,.csv"
                       onChange={handleFileChange}
+                      // disabled={!selectedOption}
+                      className="form-control-file"
                     />
                     <div className="image-uploads mt-2 text-center">
                       <ImageWithBasePath
@@ -138,20 +145,34 @@ const ImportProduct = ({
             </Row>
           </Modal.Body>
 
-          <Modal.Footer className="d-flex justify-content-end gap-2">
-            <Button variant="secondary" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Spinner animation="border" size="sm" className="me-2" />
-                  Importing...
-                </>
-              ) : (
-                "Import"
+          <Modal.Footer className="d-flex justify-content-between flex-wrap gap-2">
+            <div>
+              {previewData.length > 0 && (
+                <Button
+                  className="me-2"
+                  variant="outline-secondary "
+                  onClick={() => setShowPreviewModal(true)}
+                >
+                  🔍 Preview Again
+                </Button>
               )}
-            </Button>
+            </div>
+
+            <div className="d-flex gap-2 ms-auto">
+              <Button variant="secondary" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    Importing...
+                  </>
+                ) : (
+                  "Import"
+                )}
+              </Button>
+            </div>
           </Modal.Footer>
         </Form>
       </Modal>
