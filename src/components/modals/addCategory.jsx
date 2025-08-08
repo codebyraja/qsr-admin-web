@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form, Spinner, Col, Row } from "react-bootstrap";
-import { API_BASE_URL } from "../../environment";
+import { API_URL } from "../../environment";
 import { toast } from "react-toastify";
 import { PlusCircle, X } from "feather-icons-react/build/IconComponents";
 import { loadImagesFromServer } from "../../utils/common";
 import Loader from "../loader/loader";
+import ImageUpload from "../common/ImageUpload";
 
-const initialFormState = {
+const initialFormData = {
   name: "",
   printName: "",
   status: true,
@@ -15,17 +16,20 @@ const initialFormState = {
 };
 
 const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
-  const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState(null);
   const fileInputRef = useRef(null);
   const isEditMode = Boolean(selectedRecord);
 
+  console.log("isEditMode", isEditMode);
+  console.log("selectedRecord", selectedRecord);
+
   useEffect(() => {
     if (isEditMode && selectedRecord) {
       fetchProductDetails(selectedRecord?.id);
     } else {
-      setFormData(initialFormState);
+      setFormData(initialFormData);
       setImages(null);
     }
   }, [isEditMode, selectedRecord]);
@@ -33,9 +37,7 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
   const fetchProductDetails = async (code) => {
     setIsLoading(true);
     try {
-      const res = await fetch(
-        `${API_BASE_URL}/GetMasterDetails/5?code=${code}`
-      );
+      const res = await fetch(`${API_URL}/GetMasterDetails/5?code=${code}`);
       const result = await res.json();
       // console.log("data", result);
       const data = result?.data[0];
@@ -46,7 +48,7 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
         console.log("Fetched data for edit mode:", result);
       }
       const formatted = {
-        ...initialFormState,
+        ...initialFormData,
         name: data?.name || "",
         printName: data?.printName || "",
         status: data?.isActive || true,
@@ -94,7 +96,7 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
       if (images) fd.append("Images", images);
       if (isEditMode) fd.append("Code", selectedRecord.id);
 
-      const res = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
+      const res = await fetch(`${API_URL}/SaveMasterDetailRequest`, {
         method: "POST",
         body: fd,
       });
@@ -102,6 +104,7 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
       const result = await res.json();
       if (result.status === 1) {
         toast.success(isEditMode ? "Category updated" : "Category added");
+        handleReset();
         onSuccess();
         handleClose();
       } else {
@@ -114,20 +117,42 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
     }
   };
 
+  const handleReset = () => {
+    setFormData(initialFormData);
+    setImages(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   return (
     <>
       {isLoading && <Loader />}
-      <Modal show={show} onHide={handleClose} centered>
+      <Modal
+        show={show}
+        onHide={() => {
+          handleReset();
+          handleClose();
+        }}
+        centered
+      >
         <Form onSubmit={handleSubmit}>
           <Modal.Header>
             <Modal.Title>
               {isEditMode ? "Edit Category" : "Add Category"}
             </Modal.Title>
-            <button
+            {/* <button
               type="button"
               className="modal-close-button"
               aria-label="Close"
               onClick={handleClose}
+            >
+              <X size={12} />
+            </button> */}
+            <button
+              type="button"
+              className="btn btn-sm btn-danger remove-image-button"
+              aria-label="Close"
+              onClick={handleClose}
+              // style={{ position: "absolute", right: "10px", top: "10px" }}
             >
               <X size={12} />
             </button>
@@ -169,10 +194,7 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
                       </button>
                     </div>
                   ) : (
-                    <Form.Label
-                      htmlFor="upload-avatar"
-                      className="btn btn-outline-primary"
-                    >
+                    <Form.Label htmlFor="upload-avatar" className="btn">
                       <PlusCircle className="me-2" /> Upload
                     </Form.Label>
                   )}
@@ -188,7 +210,6 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
                 </div>
               </div>
             </div>
-
             {/* Category */}
             <Form.Group className="mb-3">
               <Form.Label>
@@ -233,7 +254,13 @@ const AddCategory = ({ selectedRecord, onSuccess, show, handleClose }) => {
           </Modal.Body>
 
           <Modal.Footer className="d-flex justify-content-end gap-2">
-            <Button variant="secondary" onClick={handleClose}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                handleReset();
+                handleClose();
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="primary" disabled={isLoading}>

@@ -85,82 +85,114 @@ const Dashboard = () => {
       <div className="page-wrapper">
         <div className="content">
           <div className="row">
-          <div className="col-xl-3 col-sm-6 col-12 d-flex">
-            <div className="card dash-widget w-100">
-              <div className="card-body d-flex align-items-center">
-                <div className="dash-widgetimg">
-                  <span>
-                    <ImageWithBasePath src="assets/img/icons/dash1.svg" alt="img" />
-                  </span>
-                </div>
-                <div className="dash-widgetcontent">
-                  <h5>
-                  
-                    <CountUp className="counters" start={0} end={307144} duration={3} prefix="$" />
-                  </h5>
-                  <p className="mb-0">Total Purchase Due</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-xl-3 col-sm-6 col-12 d-flex">
-            <div className="card dash-widget dash1 w-100">
-              <div className="card-body d-flex align-items-center">
-                <div className="dash-widgetimg">
-                  <span>
-                    <ImageWithBasePath src="assets/img/icons/dash2.svg" alt="img" />
-                  </span>
-                </div>
-                <div className="dash-widgetcontent">
-                  <h5>
-                    <span className="counters" >
-                    <CountUp start={0} end={4385.0} duration={3} prefix="$" />
+            <div className="col-xl-3 col-sm-6 col-12 d-flex">
+              <div className="card dash-widget w-100">
+                <div className="card-body d-flex align-items-center">
+                  <div className="dash-widgetimg">
+                    <span>
+                      <ImageWithBasePath
+                        src="assets/img/icons/dash1.svg"
+                        alt="img"
+                      />
                     </span>
-                  </h5>
-                  <p className="mb-0">Total Sales Due</p>
+                  </div>
+                  <div className="dash-widgetcontent">
+                    <h5>
+                      <CountUp
+                        className="counters"
+                        start={0}
+                        end={307144}
+                        duration={3}
+                        prefix="₹"
+                      />
+                    </h5>
+                    <p className="mb-0">Total Purchase Due</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="col-xl-3 col-sm-6 col-12 d-flex">
-            <div className="card dash-widget dash2 w-100">
-              <div className="card-body d-flex align-items-center">
-                <div className="dash-widgetimg">
-                  <span>
-                    <ImageWithBasePath src="assets/img/icons/dash3.svg" alt="img" />
-                  </span>
-                </div>
-                <div className="dash-widgetcontent">
-                  <h5>
-                    <span className="counters" >
-                      <CountUp start={0} end={385656.50} duration={3} prefix="$" />
+            <div className="col-xl-3 col-sm-6 col-12 d-flex">
+              <div className="card dash-widget dash1 w-100">
+                <div className="card-body d-flex align-items-center">
+                  <div className="dash-widgetimg">
+                    <span>
+                      <ImageWithBasePath
+                        src="assets/img/icons/dash2.svg"
+                        alt="img"
+                      />
                     </span>
-                  </h5>
-                  <p className="mb-0">Total Sale Amount</p>
+                  </div>
+                  <div className="dash-widgetcontent">
+                    <h5>
+                      <span className="counters">
+                        <CountUp
+                          start={0}
+                          end={4385.0}
+                          duration={3}
+                          prefix="₹"
+                        />
+                      </span>
+                    </h5>
+                    <p className="mb-0">Total Sales Due</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="col-xl-3 col-sm-6 col-12 d-flex">
-            <div className="card dash-widget dash3 w-100">
-              <div className="card-body d-flex align-items-center">
-                <div className="dash-widgetimg">
-                  <span>
-                    <ImageWithBasePath src="assets/img/icons/dash4.svg" alt="img" />
-                  </span>
-                </div>
-                <div className="dash-widgetcontent">
-                  <h5>
-                    <span className="counters" >
-                      <CountUp start={0} end={400.00} duration={3} prefix="$" />
+            <div className="col-xl-3 col-sm-6 col-12 d-flex">
+              <div className="card dash-widget dash2 w-100">
+                <div className="card-body d-flex align-items-center">
+                  <div className="dash-widgetimg">
+                    <span>
+                      <ImageWithBasePath
+                        src="assets/img/icons/dash3.svg"
+                        alt="img"
+                      />
                     </span>
-                  </h5>
-                  <p className="mb-0">Total Expense Amount</p>
+                  </div>
+                  <div className="dash-widgetcontent">
+                    <h5>
+                      <span className="counters">
+                        <CountUp
+                          start={0}
+                          end={385656.5}
+                          duration={3}
+                          prefix="₹"
+                        />
+                      </span>
+                    </h5>
+                    <p className="mb-0">Total Sale Amount</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="col-xl-3 col-sm-6 col-12 d-flex">
+            <div className="col-xl-3 col-sm-6 col-12 d-flex">
+              <div className="card dash-widget dash3 w-100">
+                <div className="card-body d-flex align-items-center">
+                  <div className="dash-widgetimg">
+                    <span>
+                      <ImageWithBasePath
+                        src="assets/img/icons/dash4.svg"
+                        alt="img"
+                      />
+                    </span>
+                  </div>
+                  <div className="dash-widgetcontent">
+                    <h5>
+                      <span className="counters">
+                        <CountUp
+                          start={0}
+                          end={400.0}
+                          duration={3}
+                          prefix="₹"
+                        />
+                      </span>
+                    </h5>
+                    <p className="mb-0">Total Expense Amount</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-xl-3 col-sm-6 col-12 d-flex">
               <div className="dash-count">
                 <div className="dash-counts">
                   <h4>100</h4>
@@ -309,7 +341,7 @@ const Dashboard = () => {
                               Lenevo 3rd Generation
                             </Link>
                           </td>
-                          <td>$12500</td>
+                          <td>₹12500</td>
                         </tr>
                         <tr>
                           <td>2</td>
@@ -323,9 +355,11 @@ const Dashboard = () => {
                                 alt="product"
                               />
                             </Link>
-                            <Link to={route.productlist} className="fw-bold">Bold V3.2</Link>
+                            <Link to={route.productlist} className="fw-bold">
+                              Bold V3.2
+                            </Link>
                           </td>
-                          <td>$1600</td>
+                          <td>₹1600</td>
                         </tr>
                         <tr>
                           <td>3</td>
@@ -339,9 +373,11 @@ const Dashboard = () => {
                                 alt="product"
                               />
                             </Link>
-                            <Link to={route.productlist} className="fw-bold">Nike Jordan</Link>
+                            <Link to={route.productlist} className="fw-bold">
+                              Nike Jordan
+                            </Link>
                           </td>
-                          <td>$2000</td>
+                          <td>₹2000</td>
                         </tr>
                         <tr>
                           <td>4</td>
@@ -359,7 +395,7 @@ const Dashboard = () => {
                               Apple Series 5 Watch
                             </Link>
                           </td>
-                          <td>$800</td>
+                          <td>₹800</td>
                         </tr>
                       </tbody>
                     </table>
@@ -406,12 +442,12 @@ const Dashboard = () => {
                               alt="product"
                             />
                           </Link>
-                          <Link to="#" className="fw-bold">Red Premium Handy </Link>
+                          <Link to="#" className="fw-bold">
+                            Red Premium Handy{" "}
+                          </Link>
                         </div>
                       </td>
-                      <td>
-                        PT006
-                      </td>
+                      <td>PT006</td>
                       <td>17 Jan 2023</td>
                       <td>29 Mar 2023</td>
                       <td className="action-table-data">
@@ -419,11 +455,7 @@ const Dashboard = () => {
                           <Link className="me-2 p-2" to="#">
                             <i data-feather="edit" className="feather-edit" />
                           </Link>
-                          <Link
-                            className=" confirm-text p-2"
-                            to="#"
-                            
-                          >
+                          <Link className=" confirm-text p-2" to="#">
                             <i
                               data-feather="trash-2"
                               className="feather-trash-2"
@@ -447,12 +479,12 @@ const Dashboard = () => {
                               alt="product"
                             />
                           </Link>
-                          <Link to="#" className="fw-bold">Iphone 14 Pro</Link>
+                          <Link to="#" className="fw-bold">
+                            Iphone 14 Pro
+                          </Link>
                         </div>
                       </td>
-                      <td>
-                        PT007
-                      </td>
+                      <td>PT007</td>
                       <td>22 Feb 2023</td>
                       <td>04 Apr 2023</td>
                       <td className="action-table-data">
@@ -460,11 +492,7 @@ const Dashboard = () => {
                           <Link className="me-2 p-2" to="#">
                             <i data-feather="edit" className="feather-edit" />
                           </Link>
-                          <Link
-                            className="confirm-text p-2"
-                            to="#"
-                            
-                          >
+                          <Link className="confirm-text p-2" to="#">
                             <i
                               data-feather="trash-2"
                               className="feather-trash-2"
@@ -488,12 +516,12 @@ const Dashboard = () => {
                               alt="product"
                             />
                           </Link>
-                          <Link to="#" className="fw-bold">Black Slim 200 </Link>
+                          <Link to="#" className="fw-bold">
+                            Black Slim 200{" "}
+                          </Link>
                         </div>
                       </td>
-                      <td>
-                        PT008
-                      </td>
+                      <td>PT008</td>
                       <td>18 Mar 2023</td>
                       <td>13 May 2023</td>
                       <td className="action-table-data">
@@ -501,11 +529,7 @@ const Dashboard = () => {
                           <Link className="me-2 p-2" to="#">
                             <i data-feather="edit" className="feather-edit" />
                           </Link>
-                          <Link
-                            className=" confirm-text p-2"
-                            to="#"
-                            
-                          >
+                          <Link className=" confirm-text p-2" to="#">
                             <i
                               data-feather="trash-2"
                               className="feather-trash-2"
@@ -529,12 +553,12 @@ const Dashboard = () => {
                               alt="product"
                             />
                           </Link>
-                          <Link to="#" className="fw-bold">Woodcraft Sandal</Link>
+                          <Link to="#" className="fw-bold">
+                            Woodcraft Sandal
+                          </Link>
                         </div>
                       </td>
-                      <td>
-                        PT009
-                      </td>
+                      <td>PT009</td>
                       <td>29 Mar 2023</td>
                       <td>27 May 2023</td>
                       <td className="action-table-data">
@@ -542,11 +566,7 @@ const Dashboard = () => {
                           <Link className="me-2 p-2" to="#">
                             <i data-feather="edit" className="feather-edit" />
                           </Link>
-                          <Link
-                            className=" confirm-text p-2"
-                            to="#"
-                            
-                          >
+                          <Link className=" confirm-text p-2" to="#">
                             <i
                               data-feather="trash-2"
                               className="feather-trash-2"
@@ -570,12 +590,12 @@ const Dashboard = () => {
                               alt="product"
                             />
                           </Link>
-                          <Link to="#" className="fw-bold">Apple Series 5 Watch </Link>
+                          <Link to="#" className="fw-bold">
+                            Apple Series 5 Watch{" "}
+                          </Link>
                         </div>
                       </td>
-                      <td>
-                        PT010
-                      </td>
+                      <td>PT010</td>
                       <td>24 Mar 2023</td>
                       <td>26 May 2023</td>
                       <td className="action-table-data">
@@ -588,11 +608,7 @@ const Dashboard = () => {
                           >
                             <i data-feather="edit" className="feather-edit" />
                           </Link>
-                          <Link
-                            className=" confirm-text p-2"
-                            to="#"
-                            
-                          >
+                          <Link className=" confirm-text p-2" to="#">
                             <i
                               data-feather="trash-2"
                               className="feather-trash-2"

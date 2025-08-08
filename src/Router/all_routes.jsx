@@ -1,4 +1,3 @@
-
 export const all_routes = {
   newdashboard: "/index",
   dashboard: "/admin-dashboard",
@@ -7,6 +6,7 @@ export const all_routes = {
   salesdashboard: "/sales-dashboard",
   brandlist: "/brand-list",
   units: "/units",
+  customers: "/customers-list",
   variantyattributes: "/variant-attributes",
   warranty: "/warranty",
   barcode: "/barcode",
@@ -146,7 +146,7 @@ export const all_routes = {
   attendanceadmin: "attendance-admin",
   payslip: "/payslip",
   holidays: "/holidays",
-  customers: "/customers",
+  // customers: "/customers",
   suppliers: "/suppliers",
   storelist: "/store-list",
   managestock: "/manage-stocks",
@@ -201,7 +201,6 @@ export const all_routes = {
   warehouses: "/warehouse",
   coupons: "/coupons",
   payrollList: "/employee-salary",
-
 
   //New Page
   onlineorder: "/online-orders",
@@ -283,6 +282,6 @@ export const all_routes = {
   countries: "/countries",
   cities: "/cities",
   activities: "/activities",
-  pricing:"/pricing",
-  contact:"/contacts"
+  pricing: "/pricing",
+  contact: "/contacts",
 };

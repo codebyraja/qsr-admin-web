@@ -8,6 +8,8 @@ import * as XLSX from "xlsx";
 // }
 
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 export function generateSlug(name, options = {}) {
   const { separator = "-", lowercase = true } = options;
@@ -131,4 +133,14 @@ export const loadImagesFromServer = async (
   );
 
   return imageObjs.filter(Boolean);
+};
+
+export const handleCollapseToggle = (
+  e,
+  dispatch,
+  setToogleHeader,
+  isHeaderCollapsed
+) => {
+  e.preventDefault();
+  dispatch(setToogleHeader(!isHeaderCollapsed));
 };

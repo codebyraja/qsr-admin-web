@@ -9,11 +9,17 @@ export const TAX_TYPES = [
 ];
 
 export const DISCOUNT_TYPES = [
-  { value: 1, label: "Percentage" },
-  { value: 2, label: "Cash" },
+  { value: 1, label: "Cash" },
+  { value: 2, label: "Percentage" },
 ];
 
 export const IMPORT_OPT = [
   { value: "product", label: "Import Product" },
   { value: "stock", label: "Import Stock" },
+];
+
+export const ROLE_OPT = [
+  { value: 1, label: "Super Admin" },
+  { value: 2, label: "Admin" },
+  { value: 3, label: "User" },
 ];

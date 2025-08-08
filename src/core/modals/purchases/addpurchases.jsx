@@ -124,11 +124,11 @@ const AddPurchases = () => {
                                 <tr>
                                   <th>Product</th>
                                   <th>Qty</th>
-                                  <th>Purchase Price($)</th>
-                                  <th>Discount($)</th>
+                                  <th>Purchase Price(₹)</th>
+                                  <th>Discount(₹)</th>
                                   <th>Tax(%)</th>
-                                  <th>Tax Amount($)</th>
-                                  <th>Unit Cost($)</th>
+                                  <th>Tax Amount(₹)</th>
+                                  <th>Unit Cost(₹)</th>
                                   <th>Total Cost(%)</th>
                                 </tr>
                               </thead>

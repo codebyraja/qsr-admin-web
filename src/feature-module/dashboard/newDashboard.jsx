@@ -477,7 +477,7 @@ const NewDashboard = () => {
                                 <div className="ms-2">
                                     <p className="text-white mb-1">Total Sales</p>
                                     <div className="d-inline-flex align-items-center flex-wrap gap-2">
-                                        <h4 className="text-white">$48,988,078</h4>
+                                        <h4 className="text-white">₹48,988,078</h4>
                                         <span className="badge badge-soft-primary">
                                             <i className="ti ti-arrow-up me-1" />
                                             +22%
@@ -496,7 +496,7 @@ const NewDashboard = () => {
                                 <div className="ms-2">
                                     <p className="text-white mb-1">Total Sales Return</p>
                                     <div className="d-inline-flex align-items-center flex-wrap gap-2">
-                                        <h4 className="text-white">$16,478,145</h4>
+                                        <h4 className="text-white">₹16,478,145</h4>
                                         <span className="badge badge-soft-danger">
                                             <i className="ti ti-arrow-down me-1" />
                                             -22%
@@ -515,7 +515,7 @@ const NewDashboard = () => {
                                 <div className="ms-2">
                                     <p className="text-white mb-1">Total Purchase</p>
                                     <div className="d-inline-flex align-items-center flex-wrap gap-2">
-                                        <h4 className="text-white">$24,145,789</h4>
+                                        <h4 className="text-white">₹24,145,789</h4>
                                         <span className="badge badge-soft-success">
                                             <i className="ti ti-arrow-up me-1" />
                                             +22%
@@ -534,7 +534,7 @@ const NewDashboard = () => {
                                 <div className="ms-2">
                                     <p className="text-white mb-1">Total Purchase Return</p>
                                     <div className="d-inline-flex align-items-center flex-wrap gap-2">
-                                        <h4 className="text-white">$18,458,747</h4>
+                                        <h4 className="text-white">₹18,458,747</h4>
                                         <span className="badge badge-soft-success">
                                             <i className="ti ti-arrow-up me-1" />
                                             +22%
@@ -552,7 +552,7 @@ const NewDashboard = () => {
                             <div className="card-body">
                                 <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
                                     <div>
-                                        <h4 className="mb-1">$8,458,798</h4>
+                                        <h4 className="mb-1">₹8,458,798</h4>
                                         <p>Profit</p>
                                     </div>
                                     <span className="revenue-icon bg-cyan-transparent text-cyan">
@@ -581,7 +581,7 @@ const NewDashboard = () => {
                             <div className="card-body">
                                 <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
                                     <div>
-                                        <h4 className="mb-1">$48,988,78</h4>
+                                        <h4 className="mb-1">₹48,988,78</h4>
                                         <p>Invoice Due</p>
                                     </div>
                                     <span className="revenue-icon bg-teal-transparent text-teal">
@@ -610,7 +610,7 @@ const NewDashboard = () => {
                             <div className="card-body">
                                 <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
                                     <div>
-                                        <h4 className="mb-1">$8,980,097</h4>
+                                        <h4 className="mb-1">₹8,980,097</h4>
                                         <p>Total Expenses</p>
                                     </div>
                                     <span className="revenue-icon bg-orange-transparent text-orange">
@@ -639,7 +639,7 @@ const NewDashboard = () => {
                             <div className="card-body">
                                 <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
                                     <div>
-                                        <h4 className="mb-1">$78,458,798</h4>
+                                        <h4 className="mb-1">₹78,458,798</h4>
                                         <p>Total Payment Returns</p>
                                     </div>
                                     <span className="revenue-icon bg-indigo-transparent text-indigo">
@@ -838,7 +838,7 @@ const NewDashboard = () => {
                 </div>
                 <div className="row">
                     {/* Top Selling Products */}
-                    <div className="col-xxl-4 col-md-6 d-flex">
+                    {/* <div className="col-xxl-4 col-md-6 d-flex">
                         <div className="card flex-fill">
                             <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div className="d-inline-flex align-items-center">
@@ -887,7 +887,7 @@ const NewDashboard = () => {
                                                 <Link to="#">Charger Cable - Lighting</Link>
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
-                                                <p>$187</p>
+                                                <p>₹187</p>
                                                 <p>247+ Sales</p>
                                             </div>
                                         </div>
@@ -907,7 +907,7 @@ const NewDashboard = () => {
                                                 <Link to="#">Yves Saint Eau De Parfum</Link>
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
-                                                <p>$145</p>
+                                                <p>₹145</p>
                                                 <p>289+ Sales</p>
                                             </div>
                                         </div>
@@ -927,7 +927,7 @@ const NewDashboard = () => {
                                                 <Link to="#">Apple Airpods 2</Link>
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
-                                                <p>$458</p>
+                                                <p>₹458</p>
                                                 <p>300+ Sales</p>
                                             </div>
                                         </div>
@@ -947,7 +947,7 @@ const NewDashboard = () => {
                                                 <Link to="#">Vacuum Cleaner</Link>
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
-                                                <p>$139</p>
+                                                <p>₹139</p>
                                                 <p>225+ Sales</p>
                                             </div>
                                         </div>
@@ -967,7 +967,7 @@ const NewDashboard = () => {
                                                 <Link to="#">Samsung Galaxy S21 Fe 5g</Link>
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
-                                                <p>$898</p>
+                                                <p>₹898</p>
                                                 <p>365+ Sales</p>
                                             </div>
                                         </div>
@@ -979,10 +979,10 @@ const NewDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* /Top Selling Products */}
                     {/* Low Stock Products */}
-                    <div className="col-xxl-4 col-md-6 d-flex">
+                    {/* <div className="col-xxl-4 col-md-6 d-flex">
                         <div className="card flex-fill">
                             <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div className="d-inline-flex align-items-center">
@@ -1086,10 +1086,10 @@ const NewDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* /Low Stock Products */}
                     {/* Recent Sales */}
-                    <div className="col-xxl-4 col-md-12 d-flex">
+                    {/* <div className="col-xxl-4 col-md-12 d-flex">
                         <div className="card flex-fill">
                             <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div className="d-inline-flex align-items-center">
@@ -1139,7 +1139,7 @@ const NewDashboard = () => {
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
                                                 <p>Electronics</p>
-                                                <p className="text-gray-9">$640</p>
+                                                <p className="text-gray-9">₹640</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1162,7 +1162,7 @@ const NewDashboard = () => {
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
                                                 <p>Fashion</p>
-                                                <p className="text-gray-9">$126</p>
+                                                <p className="text-gray-9">₹126</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1185,7 +1185,7 @@ const NewDashboard = () => {
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
                                                 <p>Health</p>
-                                                <p className="text-gray-9">$69</p>
+                                                <p className="text-gray-9">₹69</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1208,7 +1208,7 @@ const NewDashboard = () => {
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
                                                 <p>Sports</p>
-                                                <p className="text-gray-9">$65</p>
+                                                <p className="text-gray-9">₹65</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1231,7 +1231,7 @@ const NewDashboard = () => {
                                             </h6>
                                             <div className="d-flex align-items-center item-list">
                                                 <p>Lifestyles</p>
-                                                <p className="text-gray-9">$87.56</p>
+                                                <p className="text-gray-9">₹87.56</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1245,12 +1245,12 @@ const NewDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* /Recent Sales */}
                 </div>
                 <div className="row">
                     {/* Sales Statics */}
-                    <div className="col-xl-6 col-sm-12 col-12 d-flex">
+                    {/* <div className="col-xl-6 col-sm-12 col-12 d-flex">
                         <div className="card flex-fill">
                             <div className="card-header d-flex justify-content-between align-items-center">
                                 <div className="d-inline-flex align-items-center">
@@ -1292,7 +1292,7 @@ const NewDashboard = () => {
                                 <div className="d-flex align-items-center flex-wrap gap-2">
                                     <div className="border p-2 br-8">
                                         <h5 className="d-inline-flex align-items-center text-teal">
-                                            $12,189
+                                            ₹12,189
                                             <span className="badge badge-success badge-xs d-inline-flex align-items-center ms-2">
                                                 <i className="ti ti-arrow-up-left me-1" />
                                                 25%
@@ -1302,7 +1302,7 @@ const NewDashboard = () => {
                                     </div>
                                     <div className="border p-2 br-8">
                                         <h5 className="d-inline-flex align-items-center text-orange">
-                                            $48,988,078
+                                            ₹48,988,078
                                             <span className="badge badge-danger badge-xs d-inline-flex align-items-center ms-2">
                                                 <i className="ti ti-arrow-down-right me-1" />
                                                 25%
@@ -1321,10 +1321,10 @@ const NewDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* /Sales Statics */}
                     {/* Recent Transactions */}
-                    <div className="col-xl-6 col-sm-12 col-12 d-flex">
+                    {/* <div className="col-xl-6 col-sm-12 col-12 d-flex">
                         <div className="card flex-fill">
                             <div className="card-header d-flex align-items-center justify-content-between flex-wrap gap-3">
                                 <div className="d-inline-flex align-items-center">
@@ -1417,7 +1417,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="fs-16 fw-bold text-gray-9">$4,560</td>
+                                                        <td className="fs-16 fw-bold text-gray-9">₹4,560</td>
                                                     </tr>
                                                     <tr>
                                                         <td>23 May 2025</td>
@@ -1447,7 +1447,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="fs-16 fw-bold text-gray-9">$3,569</td>
+                                                        <td className="fs-16 fw-bold text-gray-9">₹3,569</td>
                                                     </tr>
                                                     <tr>
                                                         <td>22 May 2025</td>
@@ -1479,7 +1479,7 @@ const NewDashboard = () => {
                                                                 Draft
                                                             </span>
                                                         </td>
-                                                        <td className="fs-16 fw-bold text-gray-9">$4,560</td>
+                                                        <td className="fs-16 fw-bold text-gray-9">₹4,560</td>
                                                     </tr>
                                                     <tr>
                                                         <td>21 May 2025</td>
@@ -1509,7 +1509,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="fs-16 fw-bold text-gray-9">$2,155</td>
+                                                        <td className="fs-16 fw-bold text-gray-9">₹2,155</td>
                                                     </tr>
                                                     <tr>
                                                         <td>21 May 2025</td>
@@ -1541,7 +1541,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="fs-16 fw-bold text-gray-9">$5,123</td>
+                                                        <td className="fs-16 fw-bold text-gray-9">₹5,123</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1572,7 +1572,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1000</td>
+                                                        <td className="text-gray-9">₹1000</td>
                                                     </tr>
                                                     <tr>
                                                         <td>23 May 2025</td>
@@ -1587,7 +1587,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1500</td>
+                                                        <td className="text-gray-9">₹1500</td>
                                                     </tr>
                                                     <tr>
                                                         <td>22 May 2025</td>
@@ -1602,7 +1602,7 @@ const NewDashboard = () => {
                                                                 Pending
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$2000</td>
+                                                        <td className="text-gray-9">₹2000</td>
                                                     </tr>
                                                     <tr>
                                                         <td>21 May 2025</td>
@@ -1617,7 +1617,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1200</td>
+                                                        <td className="text-gray-9">₹1200</td>
                                                     </tr>
                                                     <tr>
                                                         <td>21 May 2025</td>
@@ -1632,7 +1632,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1300</td>
+                                                        <td className="text-gray-9">₹1300</td>
                                                     </tr>
                                                     <tr>
                                                         <td>28 May 2025</td>
@@ -1647,7 +1647,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1600</td>
+                                                        <td className="text-gray-9">₹1600</td>
                                                     </tr>
                                                     <tr>
                                                         <td>26 May 2025</td>
@@ -1662,7 +1662,7 @@ const NewDashboard = () => {
                                                                 Completed
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1100</td>
+                                                        <td className="text-gray-9">₹1100</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1708,7 +1708,7 @@ const NewDashboard = () => {
                                                                 Sent
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$4,560</td>
+                                                        <td className="text-gray-9">₹4,560</td>
                                                     </tr>
                                                     <tr>
                                                         <td>23 May 2025</td>
@@ -1738,7 +1738,7 @@ const NewDashboard = () => {
                                                                 Ordered
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$3,569</td>
+                                                        <td className="text-gray-9">₹3,569</td>
                                                     </tr>
                                                     <tr>
                                                         <td>22 May 2025</td>
@@ -1770,7 +1770,7 @@ const NewDashboard = () => {
                                                                 Pending
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$4,560</td>
+                                                        <td className="text-gray-9">₹4,560</td>
                                                     </tr>
                                                     <tr>
                                                         <td>21 May 2025</td>
@@ -1800,7 +1800,7 @@ const NewDashboard = () => {
                                                                 Ordered
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$2,155</td>
+                                                        <td className="text-gray-9">₹2,155</td>
                                                     </tr>
                                                     <tr>
                                                         <td>21 May 2025</td>
@@ -1832,7 +1832,7 @@ const NewDashboard = () => {
                                                                 Sent
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$5,123</td>
+                                                        <td className="text-gray-9">₹5,123</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1866,7 +1866,7 @@ const NewDashboard = () => {
                                                                 Approved
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$200</td>
+                                                        <td className="text-gray-9">₹200</td>
                                                     </tr>
                                                     <tr>
                                                         <td>23 May 2025</td>
@@ -1884,7 +1884,7 @@ const NewDashboard = () => {
                                                                 Approved
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$200</td>
+                                                        <td className="text-gray-9">₹200</td>
                                                     </tr>
                                                     <tr>
                                                         <td>22 May 2025</td>
@@ -1902,7 +1902,7 @@ const NewDashboard = () => {
                                                                 Approved
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$50</td>
+                                                        <td className="text-gray-9">₹50</td>
                                                     </tr>
                                                     <tr>
                                                         <td>21 May 2025</td>
@@ -1918,7 +1918,7 @@ const NewDashboard = () => {
                                                                 Pending
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$800</td>
+                                                        <td className="text-gray-9">₹800</td>
                                                     </tr>
                                                     <tr>
                                                         <td>21 May 2025</td>
@@ -1934,7 +1934,7 @@ const NewDashboard = () => {
                                                                 Approved
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$100</td>
+                                                        <td className="text-gray-9">₹100</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1980,7 +1980,7 @@ const NewDashboard = () => {
                                                                 Paid
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1300</td>
+                                                        <td className="text-gray-9">₹1300</td>
                                                     </tr>
                                                     <tr>
                                                         <td>
@@ -2010,7 +2010,7 @@ const NewDashboard = () => {
                                                                 Overdue
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1250</td>
+                                                        <td className="text-gray-9">₹1250</td>
                                                     </tr>
                                                     <tr>
                                                         <td>
@@ -2042,7 +2042,7 @@ const NewDashboard = () => {
                                                                 Paid
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1700</td>
+                                                        <td className="text-gray-9">₹1700</td>
                                                     </tr>
                                                     <tr>
                                                         <td>
@@ -2072,7 +2072,7 @@ const NewDashboard = () => {
                                                                 Unpaid
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1500</td>
+                                                        <td className="text-gray-9">₹1500</td>
                                                     </tr>
                                                     <tr>
                                                         <td>
@@ -2104,7 +2104,7 @@ const NewDashboard = () => {
                                                                 Paid
                                                             </span>
                                                         </td>
-                                                        <td className="text-gray-9">$1000</td>
+                                                        <td className="text-gray-9">₹1000</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -2113,12 +2113,12 @@ const NewDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* /Recent Transactions */}
                 </div>
                 <div className="row">
                     {/* Top Customers */}
-                    <div className="col-xxl-4 col-md-6 d-flex">
+                    {/* <div className="col-xxl-4 col-md-6 d-flex">
                         <div className="card flex-fill">
                             <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div className="d-inline-flex align-items-center">
@@ -2157,7 +2157,7 @@ const NewDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <h5>$8,9645</h5>
+                                        <h5>₹8,9645</h5>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-between border-bottom mb-3 pb-3 flex-wrap gap-2">
@@ -2182,7 +2182,7 @@ const NewDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <h5>$16,985</h5>
+                                        <h5>₹16,985</h5>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-between border-bottom mb-3 pb-3 flex-wrap gap-2">
@@ -2207,7 +2207,7 @@ const NewDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <h5>$5,366</h5>
+                                        <h5>₹5,366</h5>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-between border-bottom mb-3 pb-3 flex-wrap gap-2">
@@ -2232,7 +2232,7 @@ const NewDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <h5>$4,569</h5>
+                                        <h5>₹4,569</h5>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
@@ -2257,15 +2257,15 @@ const NewDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="text-end">
-                                        <h5>$3,5698</h5>
+                                        <h5>₹3,5698</h5>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* /Top Customers */}
                     {/* Top Categories */}
-                    <div className="col-xxl-4 col-md-6 d-flex">
+                    {/* <div className="col-xxl-4 col-md-6 d-flex">
                         <div className="card flex-fill">
                             <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div className="d-inline-flex align-items-center">
@@ -2357,10 +2357,10 @@ const NewDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* /Top Categories */}
                     {/* Order Statistics */}
-                    <div className="col-xxl-4 col-md-12 d-flex">
+                    {/* <div className="col-xxl-4 col-md-12 d-flex">
                         <div className="card flex-fill">
                             <div className="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
                                 <div className="d-inline-flex align-items-center">
@@ -2404,11 +2404,11 @@ const NewDashboard = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* /Order Statistics */}
                 </div>
             </div>
-            <div className="copyright-footer d-flex align-items-center justify-content-between border-top bg-white gap-3 flex-wrap">
+            {/* <div className="copyright-footer d-flex align-items-center justify-content-between border-top bg-white gap-3 flex-wrap">
                 <p className="fs-13 text-gray-9 mb-0">
                     2014-2025 © DreamsPOS. All Right Reserved
                 </p>
@@ -2418,7 +2418,7 @@ const NewDashboard = () => {
                         Dreams
                     </Link>
                 </p>
-            </div>
+            </div> */}
         </div>
 
     )

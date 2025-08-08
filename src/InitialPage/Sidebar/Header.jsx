@@ -508,7 +508,7 @@ const Header = () => {
                 {/* <FeatherIcon icon="globe" /> */}
                 <ImageWithBasePath src={flagImage} alt="img" height={16} />
               </Link>
-              <div className="dropdown-menu dropdown-menu-right">
+              {/* <div className="dropdown-menu dropdown-menu-right">
                 <Link
                   to="#"
                   className="dropdown-item active"
@@ -533,7 +533,7 @@ const Header = () => {
                   />{" "}
                   Arabic
                 </Link>
-              </div>
+              </div> */}
             </li>
             {/* /Flag */}
             <li className="nav-item nav-item-box">

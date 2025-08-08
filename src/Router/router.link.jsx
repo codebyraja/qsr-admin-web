@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Navigate } from "react-router-dom";
-import ProductList from "../pages/productlist";
+
 // import ProductList from "../feature-module/inventory/productlist";
 import Dashboard from "../feature-module/dashboard/Dashboard";
 // import AddProduct from "../feature-module/inventory/addproduct";
@@ -10,9 +10,17 @@ import Dashboard from "../feature-module/dashboard/Dashboard";
 import SubCategories from "../feature-module/inventory/subcategories";
 import EditProduct from "../feature-module/inventory/editproduct";
 
-import AddProduct from "../pages/addproduct";
-import UnitList from "../pages/unitlist";
-import CategoryList from "../pages/categorylist";
+import AddProduct from "../pages/product/addproduct";
+import ProductList from "../pages/product/productlist";
+import ProductDetail from "../pages/product/productdetail";
+import UnitList from "../pages/partials/unitlist";
+import CategoryList from "../pages/partials/categorylist";
+import UserList from "../pages/partials/userlist";
+import CustomerList from "../pages/partials/customerlist";
+
+import SalesList from "../pages/sales/saleslist";
+import PurchasesList from "../pages/purchases/purchaselist";
+// import PurchasesList from "../pages/purchases/purchaseslist-1111";
 
 import SalesDashbaord from "../feature-module/dashboard/salesdashbaord";
 import BrandList from "../feature-module/inventory/brandlist";
@@ -106,7 +114,7 @@ import Audiocall from "../feature-module/Application/audiocall";
 import Email from "../feature-module/Application/email";
 import Callhistory from "../feature-module/Application/callhistory";
 import QRcode from "../feature-module/inventory/qrcode";
-import PurchasesList from "../feature-module/purchases/purchaseslist";
+// import PurchasesList from "../feature-module/purchases/purchaseslist";
 import PurchaseOrderReport from "../feature-module/purchases/purchaseorderreport";
 import PurchaseReturns from "../feature-module/purchases/purchasereturns";
 import Appearance from "../feature-module/settings/websitesettings/appearance";
@@ -152,7 +160,7 @@ import StorageSettings from "../feature-module/settings/othersettings/storageset
 import AttendanceAdmin from "../feature-module/hrm/attendanceadmin";
 import Payslip from "../feature-module/hrm/payslip";
 import Holidays from "../feature-module/hrm/holidays";
-import SalesList from "../feature-module/sales/saleslist";
+// import SalesList from "../feature-module/sales/saleslist";
 import SalesReturn from "../feature-module/sales/salesreturn";
 import QuotationList from "../feature-module/sales/quotationlist";
 import Notes from "../feature-module/Application/notes";
@@ -286,8 +294,6 @@ import Faq from "../feature-module/content/faq";
 import Activities from "../feature-module/pages/activities";
 import Pricing from "../feature-module/pages/pricing";
 import Contacts from "../feature-module/Application/contacts";
-import ProductDetail from "../pages/productdetail";
-import Users from "../pages/users";
 
 export const publicRoutes = [
   {
@@ -1053,13 +1059,13 @@ export const publicRoutes = [
     element: <QRcode />,
     route: Route,
   },
-  {
-    id: 68,
-    path: routes.purchaselist,
-    name: "purchaselist",
-    element: <PurchasesList />,
-    route: Route,
-  },
+  // {
+  //   id: 68,
+  //   path: routes.purchaselist,
+  //   name: "purchaselist",
+  //   element: <PurchasesList />,
+  //   route: Route,
+  // },
   {
     id: 69,
     path: routes.purchaseorderreport,
@@ -1165,13 +1171,13 @@ export const publicRoutes = [
     element: <BankSetting />,
     route: Route,
   },
-  {
-    id: 84,
-    path: routes.customers,
-    name: "customers",
-    element: <Customers />,
-    route: Route,
-  },
+  // {
+  //   id: 84,
+  //   path: routes.customers,
+  //   name: "customers",
+  //   element: <Customers />,
+  //   route: Route,
+  // },
   {
     id: 85,
     path: routes.suppliers,
@@ -1450,7 +1456,7 @@ export const publicRoutes = [
     id: 104,
     path: routes.users,
     name: "users",
-    element: <Users />,
+    element: <UserList />,
     route: Route,
   },
   {
@@ -2068,6 +2074,27 @@ export const publicRoutes = [
     path: routes.contact,
     name: "contact",
     element: <Contacts />,
+    route: Route,
+  },
+  {
+    id: 174,
+    path: routes.saleslist,
+    name: "sale-list",
+    element: <SalesList />,
+    route: Route,
+  },
+  {
+    id: 175,
+    path: routes.purchaselist,
+    name: "purchaselist",
+    element: <PurchasesList />,
+    route: Route,
+  },
+  {
+    id: 176,
+    path: routes.customers,
+    name: "customers-list",
+    element: <CustomerList />,
     route: Route,
   },
 ];

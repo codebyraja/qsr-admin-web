@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../environment";
+import { API_URL } from "../environment";
 
 export const useMasterList = (type) => {
   const [list, setList] = useState([]);
@@ -8,7 +8,7 @@ export const useMasterList = (type) => {
   const fetchList = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/GetMasterListByType/${type}`);
+      const res = await fetch(`${API_URL}/GetMasterListByType/${type}`);
       const result = await res.json();
       console.log("Fetched master list:", result);
 

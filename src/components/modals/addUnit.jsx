@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form, Spinner } from "react-bootstrap";
-import { API_BASE_URL } from "../../environment";
+import { API_URL } from "../../environment";
 import { toast } from "react-toastify";
 import { PlusCircle, X } from "feather-icons-react/build/IconComponents";
 import { loadImagesFromServer } from "../../utils/common";
@@ -30,9 +30,7 @@ const AddUnit = ({ selectedRecord, onSuccess, show, handleClose }) => {
   const fetchProductDetails = async (code) => {
     setIsLoading(true);
     try {
-      const res = await fetch(
-        `${API_BASE_URL}/GetMasterDetails/8?code=${code}`
-      );
+      const res = await fetch(`${API_URL}/GetMasterDetails/8?code=${code}`);
       const result = await res.json();
       // console.log("data", result);
       const data = result?.data[0];
@@ -81,7 +79,7 @@ const AddUnit = ({ selectedRecord, onSuccess, show, handleClose }) => {
       fd.append("Images", []);
       if (isEditMode) fd.append("Code", selectedRecord?.id);
 
-      const res = await fetch(`${API_BASE_URL}/SaveMasterDetails`, {
+      const res = await fetch(`${API_URL}/SaveMasterDetailRequest`, {
         method: "POST",
         body: fd,
       });
@@ -89,6 +87,7 @@ const AddUnit = ({ selectedRecord, onSuccess, show, handleClose }) => {
       const result = await res.json();
       if (result.status === 1) {
         toast.success(isEditMode ? "Unit updated" : "Unit added");
+        handleReset();
         onSuccess();
         handleClose();
       } else {
@@ -101,10 +100,21 @@ const AddUnit = ({ selectedRecord, onSuccess, show, handleClose }) => {
     }
   };
 
+  const handleReset = () => {
+    setFormData({ name: "", printName: "", status: true });
+  };
+
   return (
     <>
       {isLoading && <Loader />}
-      <Modal show={show} onHide={handleClose} centered>
+      <Modal
+        show={show}
+        onHide={() => {
+          handleReset();
+          handleClose();
+        }}
+        centered
+      >
         <Form onSubmit={handleSubmit}>
           <Modal.Header>
             <Modal.Title>{isEditMode ? "Edit Unit" : "Add Unit"}</Modal.Title>
@@ -163,7 +173,13 @@ const AddUnit = ({ selectedRecord, onSuccess, show, handleClose }) => {
           </Modal.Body>
 
           <Modal.Footer className="d-flex justify-content-end gap-2">
-            <Button variant="secondary" onClick={handleClose}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                handleReset();
+                handleClose();
+              }}
+            >
               Cancel
             </Button>
             <Button type="submit" variant="primary" disabled={isLoading}>

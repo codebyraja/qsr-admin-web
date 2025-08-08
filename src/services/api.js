@@ -1,6 +1,6 @@
-// utils / ApiService.js;
-import { API_BASE_URL } from "../environment";
+import { API_URL } from "../environment";
 
+// utils / ApiService.js;
 const getHeaders = (customHeaders = {}) => {
   const token = localStorage.getItem("token"); // placeholder for future use
   const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
@@ -22,7 +22,7 @@ const handleResponse = async (response) => {
 
 const ApiService = {
   get: async (endpoint, params = {}, customHeaders = {}) => {
-    const url = new URL(`${API_BASE_URL}${endpoint}`);
+    const url = new URL(`${API_URL}${endpoint}`);
     Object.entries(params).forEach(([key, value]) =>
       url.searchParams.append(key, value)
     );
@@ -36,7 +36,7 @@ const ApiService = {
   },
 
   post: async (endpoint, data = {}, customHeaders = {}) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${API_URL}${endpoint}`, {
       method: "POST",
       headers: getHeaders(customHeaders),
       body: JSON.stringify(data),
@@ -46,7 +46,7 @@ const ApiService = {
   },
 
   put: async (endpoint, data = {}, customHeaders = {}) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${API_URL}${endpoint}`, {
       method: "PUT",
       headers: getHeaders(customHeaders),
       body: JSON.stringify(data),
@@ -56,7 +56,7 @@ const ApiService = {
   },
 
   delete: async (endpoint, customHeaders = {}) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${API_URL}${endpoint}`, {
       method: "DELETE",
       headers: getHeaders(customHeaders),
     });

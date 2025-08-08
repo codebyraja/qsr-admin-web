@@ -82,7 +82,8 @@ const SalesDashbaord = () => {
                 <ImageWithBasePath src="assets/img/icons/hi.svg" alt="img" />
                 &nbsp;Hi John Smilga,
               </h3>
-              &nbsp;<h6>here&apos;s what&apos;s happening with your store today.</h6>
+              &nbsp;
+              <h6>here&apos;s what&apos;s happening with your store today.</h6>
             </div>
             <div className="d-flex align-items-center">
               <div className="input-icon-start position-relative me-2">
@@ -96,7 +97,6 @@ const SalesDashbaord = () => {
                 <CollapesIcon />
               </ul>
             </div>
-
           </div>
           <div className="row sales-cards">
             <div className="col-xl-6 col-sm-12 col-12 d-flex">
@@ -104,7 +104,7 @@ const SalesDashbaord = () => {
                 <div>
                   <h6>Weekly Earning</h6>
                   <h3>
-                    $
+                    ₹
                     <span className="counters" data-count="95000.45">
                       95000.45
                     </span>
@@ -117,13 +117,19 @@ const SalesDashbaord = () => {
                     increase compare to last week
                   </p>
                 </div>
-                <ImageWithBasePath src="assets/img/icons/weekly-earning.svg" alt="img" />
+                <ImageWithBasePath
+                  src="assets/img/icons/weekly-earning.svg"
+                  alt="img"
+                />
               </div>
             </div>
             <div className="col-xl-3 col-sm-6 col-12 d-flex">
               <div className="card color-info bg-primary flex-fill mb-4">
                 <div className="mb-2">
-                  <ImageWithBasePath src="assets/img/icons/total-sales.svg" alt="img" />
+                  <ImageWithBasePath
+                    src="assets/img/icons/total-sales.svg"
+                    alt="img"
+                  />
                 </div>
                 <h3 className="counters" data-count={10000.0}>
                   10,000+
@@ -142,7 +148,10 @@ const SalesDashbaord = () => {
             <div className="col-xl-3 col-sm-6 col-12 d-flex">
               <div className="card color-info bg-secondary flex-fill mb-4">
                 <div className="mb-2">
-                  <ImageWithBasePath src="assets/img/icons/purchased-earnings.svg" alt="img" />
+                  <ImageWithBasePath
+                    src="assets/img/icons/purchased-earnings.svg"
+                    alt="img"
+                  />
                 </div>
                 <h3 className="counters" data-count={800.0}>
                   800+
@@ -164,10 +173,7 @@ const SalesDashbaord = () => {
               <div className="card flex-fill w-100 mb-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
                   <h4 className="card-title mb-0">Best Seller</h4>
-                  <Link
-                    to="#"
-                    className="btn btn-outline-light btn-sm"
-                  >
+                  <Link to="#" className="btn btn-outline-light btn-sm">
                     View All
                   </Link>
                 </div>
@@ -189,11 +195,14 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-medium">
-                                  <Link to={route.productlist} className="fw-bold">
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
                                     Lenovo 3rd Generation
                                   </Link>
                                 </h6>
-                                <p>$4420</p>
+                                <p>₹4420</p>
                               </div>
                             </div>
                           </td>
@@ -216,9 +225,14 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-medium">
-                                  <Link to={route.productlist} className="fw-bold">Bold V3.2</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Bold V3.2
+                                  </Link>
                                 </h6>
-                                <p>$1474</p>
+                                <p>₹1474</p>
                               </div>
                             </div>
                           </td>
@@ -241,9 +255,14 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-medium">
-                                  <Link to={route.productlist} className="fw-bold">Nike Jordan</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Nike Jordan
+                                  </Link>
                                 </h6>
-                                <p>$8784</p>
+                                <p>₹8784</p>
                               </div>
                             </div>
                           </td>
@@ -266,9 +285,14 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-medium">
-                                  <Link to={route.productlist} className="fw-bold">Apple Series 5 Watch</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Apple Series 5 Watch
+                                  </Link>
                                 </h6>
-                                <p>$3240</p>
+                                <p>₹3240</p>
                               </div>
                             </div>
                           </td>
@@ -291,9 +315,14 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-medium">
-                                  <Link to={route.productlist} className="fw-bold">Amazon Echo Dot</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Amazon Echo Dot
+                                  </Link>
                                 </h6>
-                                <p>$597</p>
+                                <p>₹597</p>
                               </div>
                             </div>
                           </td>
@@ -347,7 +376,12 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-bold">
-                                  <Link to={route.productlist} className="fw-bold">Lobar Handy</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Lobar Handy
+                                  </Link>
                                 </h6>
                                 <span className="d-flex align-items-center">
                                   <Clock className="feather-14" />
@@ -366,7 +400,9 @@ const SalesDashbaord = () => {
                               Success
                             </span>
                           </td>
-                          <td className="fs-16 fw-bold text-gray-9">$1,099.00</td>
+                          <td className="fs-16 fw-bold text-gray-9">
+                            ₹1,099.00
+                          </td>
                         </tr>
                         <tr>
                           <td>2</td>
@@ -383,7 +419,12 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-medium">
-                                  <Link to={route.productlist} className="fw-bold">Red Premium Handy</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Red Premium Handy
+                                  </Link>
                                 </h6>
                                 <span className="d-flex align-items-center">
                                   <Clock className="feather-14" />
@@ -402,7 +443,7 @@ const SalesDashbaord = () => {
                               Cancelled
                             </span>
                           </td>
-                          <td className="fs-16 fw-bold text-gray-9">$600.55</td>
+                          <td className="fs-16 fw-bold text-gray-9">₹600.55</td>
                         </tr>
                         <tr>
                           <td>3</td>
@@ -419,7 +460,12 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-bold">
-                                  <Link to={route.productlist} className="fw-bold">Iphone 14 Pro</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Iphone 14 Pro
+                                  </Link>
                                 </h6>
                                 <span className="d-flex align-items-center">
                                   <Clock className="feather-14" />
@@ -438,7 +484,9 @@ const SalesDashbaord = () => {
                               Completed
                             </span>
                           </td>
-                          <td className="fs-16 fw-bold text-gray-9">$1,099.00</td>
+                          <td className="fs-16 fw-bold text-gray-9">
+                            ₹1,099.00
+                          </td>
                         </tr>
                         <tr>
                           <td>4</td>
@@ -455,7 +503,12 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-bold">
-                                  <Link to={route.productlist} className="fw-bold">Black Slim 200</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Black Slim 200
+                                  </Link>
                                 </h6>
                                 <span className="d-flex align-items-center">
                                   <Clock className="feather-14" />
@@ -474,7 +527,9 @@ const SalesDashbaord = () => {
                               Success
                             </span>
                           </td>
-                          <td className="fs-16 fw-bold text-gray-9">$1,569.00</td>
+                          <td className="fs-16 fw-bold text-gray-9">
+                            ₹1,569.00
+                          </td>
                         </tr>
                         <tr>
                           <td>5</td>
@@ -491,7 +546,12 @@ const SalesDashbaord = () => {
                               </Link>
                               <div>
                                 <h6 className="fw-bold">
-                                  <Link to={route.productlist} className="fw-bold">Woodcraft Sandal</Link>
+                                  <Link
+                                    to={route.productlist}
+                                    className="fw-bold"
+                                  >
+                                    Woodcraft Sandal
+                                  </Link>
                                 </h6>
                                 <span className="d-flex align-items-center">
                                   <Clock className="feather-14" />
@@ -510,7 +570,9 @@ const SalesDashbaord = () => {
                               Success
                             </span>
                           </td>
-                          <td className="fs-16 fw-bold text-gray-9">$1,478.00</td>
+                          <td className="fs-16 fw-bold text-gray-9">
+                            ₹1,478.00
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -537,7 +599,10 @@ const SalesDashbaord = () => {
                         <Calendar className="feather-14" />
                         2023
                       </button>
-                      <ul className="dropdown-menu" aria-labelledby="dropdown-sales">
+                      <ul
+                        className="dropdown-menu"
+                        aria-labelledby="dropdown-sales"
+                      >
                         <li>
                           <Link to="#" className="dropdown-item">
                             2023
@@ -637,7 +702,6 @@ const SalesDashbaord = () => {
           </p>
         </div>
       </div>
-
     </>
   );
 };

@@ -1,20 +1,26 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table } from "antd";
 
 const Datatable = ({ props, columns, dataSource }) => {
   const [searchText, setSearchText] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [filteredDataSource, setFilteredDataSource] = useState(dataSource);
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
-  console.log("Rendering Datatable with dataSource:", dataSource);
-  console.log(
-    "Rendering filteredDataSource with dataSource:",
-    filteredDataSource
-  );
+
+  // console.log("Rendering Datatable with dataSource:", dataSource);
+  // console.log(
+  //   "Rendering filteredDataSource with dataSource:",
+  //   filteredDataSource
+  // );
+
+  useEffect(() => {
+    setFilteredDataSource(dataSource);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataSource]);
 
   const handleSearch = (value) => {
     setSearchText(value);

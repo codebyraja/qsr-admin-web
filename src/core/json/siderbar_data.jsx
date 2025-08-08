@@ -217,6 +217,21 @@ export const SidebarData = [
   //     },
   //   ],
   // },
+  {
+    label: "Sales",
+    submenuOpen: true,
+    submenuHdr: "Sales",
+    showSubRoute: false,
+    submenuItems: [
+      {
+        label: "Sales",
+        link: route.onlineorder,
+        icon: "layout-grid",
+        showSubRoute: false,
+        submenu: false,
+      },
+    ],
+  },
   // {
   //   label: "Sales",
   //   submenuOpen: true,
@@ -226,48 +241,52 @@ export const SidebarData = [
   //   submenuItems: [
   //     {
   //       label: "Sales",
-  //       icon: 'layout-grid',
+  //       icon: "layout-grid",
   //       showSubRoute: false,
   //       submenu: true,
   //       submenuItems: [
-  //         { label: "Online Orders", link: route.onlineorder, showSubRoute: false },
+  //         {
+  //           link: route.onlineorder,
+  //           label: "Online Orders",
+  //           showSubRoute: false,
+  //         },
   //         { label: "POS Orders", link: route.posorder, showSubRoute: false },
   //       ],
   //     },
-  //     {
-  //       label: "Invoices",
-  //       link: route.invoice,
-  //       icon: 'file-invoice',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "Sales Return",
-  //       link: "/sales-returns",
-  //       icon: 'receipt-refund',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "Quotation",
-  //       link: "/quotation-list",
-  //       icon: 'files',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "POS",
-  //       icon: 'device-laptop',
-  //       showSubRoute: false,
-  //       submenu: true,
-  //       submenuItems: [
-  //         { label: "POS 1", link: "/pos", showSubRoute: false },
-  //         { label: "POS 2", link: "/pos-2", showSubRoute: false },
-  //         { label: "POS 3", link: "/pos-3", showSubRoute: false },
-  //         { label: "POS 4", link: "/pos-4", showSubRoute: false },
-  //         { label: "POS 5", link: "/pos-5", showSubRoute: false },
-  //       ]
-  //     },
+  // {
+  //   label: "Invoices",
+  //   link: route.invoice,
+  //   icon: 'file-invoice',
+  //   showSubRoute: false,
+  //   submenu: false,
+  // },
+  // {
+  //   label: "Sales Return",
+  //   link: "/sales-returns",
+  //   icon: 'receipt-refund',
+  //   showSubRoute: false,
+  //   submenu: false,
+  // },
+  // {
+  //   label: "Quotation",
+  //   link: "/quotation-list",
+  //   icon: 'files',
+  //   showSubRoute: false,
+  //   submenu: false,
+  // },
+  // {
+  //   label: "POS",
+  //   icon: 'device-laptop',
+  //   showSubRoute: false,
+  //   submenu: true,
+  //   submenuItems: [
+  //     { label: "POS 1", link: "/pos", showSubRoute: false },
+  //     { label: "POS 2", link: "/pos-2", showSubRoute: false },
+  //     { label: "POS 3", link: "/pos-3", showSubRoute: false },
+  //     { label: "POS 4", link: "/pos-4", showSubRoute: false },
+  //     { label: "POS 5", link: "/pos-5", showSubRoute: false },
+  //   ]
+  // },
   //   ],
   // },
   // {
@@ -302,35 +321,35 @@ export const SidebarData = [
   //     },
   //   ],
   // },
-  // {
-  //   label: "Purchases",
-  //   submenuOpen: true,
-  //   submenuHdr: "Purchases",
-  //   showSubRoute: false,
-  //   submenuItems: [
-  //     {
-  //       label: "Purchases",
-  //       link: "/purchase-list",
-  //       icon: 'shopping-bag',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "Purchase Order",
-  //       link: "/purchase-order-report",
-  //       icon: 'file-unknown',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "Purchase Return",
-  //       link: "/purchase-returns",
-  //       icon: 'file-upload',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //   ],
-  // },
+  {
+    label: "Purchases",
+    submenuOpen: true,
+    submenuHdr: "Purchases",
+    showSubRoute: false,
+    submenuItems: [
+      {
+        label: "Purchases",
+        link: "/purchase-list",
+        icon: "shopping-bag",
+        showSubRoute: false,
+        submenu: false,
+      },
+      // {
+      //   label: "Purchase Order",
+      //   link: "/purchase-order-report",
+      //   icon: 'file-unknown',
+      //   showSubRoute: false,
+      //   submenu: false,
+      // },
+      // {
+      //   label: "Purchase Return",
+      //   link: "/purchase-returns",
+      //   icon: 'file-upload',
+      //   showSubRoute: false,
+      //   submenu: false,
+      // },
+    ],
+  },
 
   // {
   //   label: "Finance & Accounts",
@@ -411,50 +430,50 @@ export const SidebarData = [
   //   ],
   // },
 
-  // {
-  //   label: "People",
-  //   submenuOpen: true,
-  //   showSubRoute: false,
-  //   submenuHdr: "People",
+  {
+    label: "People",
+    submenuOpen: true,
+    showSubRoute: false,
+    submenuHdr: "People",
 
-  //   submenuItems: [
-  //     {
-  //       label: "Customers",
-  //       link: route.customers,
-  //       icon: 'users-group',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "Billers",
-  //       link: "/billers",
-  //       icon: 'user-up',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "Suppliers",
-  //       link: "/suppliers",
-  //       icon: 'user-dollar',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "Stores",
-  //       link: "/store-list",
-  //       icon: 'home-bolt',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //     {
-  //       label: "Warehouses",
-  //       link: "/warehouse",
-  //       icon: 'archive',
-  //       showSubRoute: false,
-  //       submenu: false,
-  //     },
-  //   ],
-  // },
+    submenuItems: [
+      {
+        label: "Customers",
+        link: route.customers,
+        icon: 'users-group',
+        showSubRoute: false,
+        submenu: false,
+      },
+      // {
+      //   label: "Billers",
+      //   link: "/billers",
+      //   icon: 'user-up',
+      //   showSubRoute: false,
+      //   submenu: false,
+      // },
+      // {
+      //   label: "Suppliers",
+      //   link: "/suppliers",
+      //   icon: 'user-dollar',
+      //   showSubRoute: false,
+      //   submenu: false,
+      // },
+      // {
+      //   label: "Stores",
+      //   link: "/store-list",
+      //   icon: 'home-bolt',
+      //   showSubRoute: false,
+      //   submenu: false,
+      // },
+      // {
+      //   label: "Warehouses",
+      //   link: "/warehouse",
+      //   icon: 'archive',
+      //   showSubRoute: false,
+      //   submenu: false,
+      // },
+    ],
+  },
 
   // {
   //   label: "HRM",

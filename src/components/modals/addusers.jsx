@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import {
   Modal,
@@ -10,75 +11,54 @@ import {
 } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { PlusCircle, X } from "feather-icons-react/build/IconComponents";
-import { API_BASE_URL } from "../../environment";
 import Select from "react-select";
+import { ROLE_OPT } from "../../constants";
+import { API_URL } from "../../environment";
 
-// Optional loader component, can replace with your own or remove
 const Loader = () => (
   <div className="text-center py-3">
     <Spinner animation="border" />
   </div>
 );
 
-const AddUsers = ({ record, onSubmitSuccess, showModal, onClose }) => {
-  const [formData, setFormData] = useState({
-    code: 0,
-    name: "",
-    mobile: "",
-    email: "",
-    username: "",
-    pwd: "",
-    role: 0,
-    userType: 0,
-    remark: "",
-    base64: "",
-    status: 0,
-    users: "",
-  });
+const initialfield = {
+  code: 0,
+  name: "",
+  mobile: "",
+  email: "",
+  username: "",
+  pwd: "",
+  role: null,
+  userType: 1,
+  remark: "",
+  base64: "",
+  status: true,
+  users: "admin",
+};
 
+const AddUsers = ({ record, onSubmitSuccess, showModal, onClose }) => {
+  const [formData, setFormData] = useState(initialfield);
   const [passwords, setPasswords] = useState({
     password: "",
     confirm: "",
     error: "",
   });
-
-  console.log("AddUsers component initialized with record:", passwords);
-  const isEditMode = Boolean(record);
   const [showPwd, setShowPwd] = useState(false);
-  // const [showConfirmPwd, setShowConfirmPwd] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const isEditMode = Boolean(record);
 
-  const roleOptions = [
-    { value: 1, label: "Super Admin" },
-    { value: 2, label: "Admin" },
-    { value: 3, label: "User" },
-  ];
   useEffect(() => {
     if (showModal) {
-      if (isEditMode && record) {
-        GetUserById(record.userId);
+      if (isEditMode && record?.code) {
+        GetUserById(record?.code);
       } else {
         resetForm();
       }
     }
-    // eslint-disable-next-line
-  }, [isEditMode, showModal, record]);
+  }, [showModal, record, isEditMode]);
 
   const resetForm = () => {
-    setFormData({
-      code: 0,
-      name: "",
-      mobile: "",
-      email: "",
-      username: "",
-      pwd: "",
-      role: 0,
-      userType: 0,
-      remark: "",
-      base64: "",
-      status: 0,
-      users: "",
-    });
+    setFormData(initialfield);
     setPasswords({ password: "", confirm: "", error: "" });
     setShowPwd(false);
   };
@@ -86,29 +66,35 @@ const AddUsers = ({ record, onSubmitSuccess, showModal, onClose }) => {
   const GetUserById = async (userId) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/GetUserById/${userId}`);
-      const result = await response.json();
-      const data = result?.data;
+      const res = await fetch(
+        `${API_URL}/GetUserMasterDetails/users?code=${userId}`
+      );
+      const result = await res.json();
+      const data = result.data;
+      // console.log("data", data);
 
       if (data) {
+        const matchedRole = ROLE_OPT?.find(
+          (opt) => opt.value === data[0].role || opt.value === data[0].roleId
+        );
         setFormData({
-          code: data.code || data.userId,
-          name: data.name || data.username,
-          mobile: data.mobile || data.mobileNo,
-          email: data.email || data.emailId,
-          username: data.username,
-          pwd: data.pwd,
-          role: data.role || data.roleId || 0,
-          userType: data.userType || "",
-          remark: data.remark || data.desc || "",
-          base64: data.base64 || data.image || "",
-          status: data.status || (data.active === 0 ? 0 : 1),
-          users: data.users || "",
+          code: data[0].code || data[0].userId,
+          name: data[0].name || data[0].username,
+          mobile: data[0].mobile || data[0].mobileNo,
+          email: data[0].email || data[0].emailId,
+          username: data[0].username,
+          pwd: data[0].pwd,
+          role: matchedRole,
+          remark: data[0].remark || data[0].desc || "",
+          base64: data[0].base64 || data[0].image || "",
+          status: data[0].status ?? (data[0].active === 2 ? false : true),
+          userType: 1,
+          users: "admin",
         });
 
         setPasswords({
-          password: data.pwd || "",
-          confirm: data.pwd || "",
+          password: data[0].pwd || "",
+          confirm: data[0].pwd || "",
           error: "",
         });
       }
@@ -131,12 +117,13 @@ const AddUsers = ({ record, onSubmitSuccess, showModal, onClose }) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };
 
+  const handleRoleSelect = (selected) => {
+    setFormData((prev) => ({ ...prev, role: selected }));
+  };
+
   const validatePasswords = () => {
     if (passwords.password !== passwords.confirm) {
-      setPasswords((prev) => ({
-        ...prev,
-        error: "Passwords do not match",
-      }));
+      setPasswords((prev) => ({ ...prev, error: "Passwords do not match" }));
       return false;
     }
 
@@ -147,6 +134,7 @@ const AddUsers = ({ record, onSubmitSuccess, showModal, onClose }) => {
       }));
       return false;
     }
+
     setPasswords((prev) => ({ ...prev, error: "" }));
     return true;
   };
@@ -155,13 +143,11 @@ const AddUsers = ({ record, onSubmitSuccess, showModal, onClose }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please select a valid image file");
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image size should be less than 5MB");
       return;
@@ -184,53 +170,42 @@ const AddUsers = ({ record, onSubmitSuccess, showModal, onClose }) => {
     e.preventDefault();
     if (!validatePasswords()) return;
 
-    // Validate required fields
-    if (!formData.name.trim()) {
-      toast.error("Name is required");
-      return;
+    const requiredFields = [
+      { key: "name", label: "Name" },
+      { key: "mobile", label: "Mobile number" },
+      { key: "email", label: "Email" },
+      { key: "username", label: "Username" },
+    ];
+
+    for (let field of requiredFields) {
+      if (!formData[field.key]?.trim()) {
+        toast.error(`${field.label} is required`);
+        return;
+      }
     }
-    if (!formData.mobile.trim()) {
-      toast.error("Mobile number is required");
-      return;
-    }
-    if (!formData.email.trim()) {
-      toast.error("Email is required");
-      return;
-    }
-    if (!formData.username.trim()) {
-      toast.error("Username is required");
-      return;
-    }
+
+    console.log("formData", formData);
     setIsLoading(true);
 
     try {
       const submitData = {
-        code: formData.code,
-        name: formData.name,
-        mobile: formData.mobile,
-        email: formData.email,
-        username: formData.username,
+        ...formData,
+        role: formData.role?.value || 0,
         pwd: passwords.password,
-        role: formData.role,
-        userType: formData.userType,
-        remark: formData.remark,
-        base64: formData.base64,
-        status: formData.status,
-        users: formData.users,
+        code: isEditMode ? record.code : 0,
       };
 
-      console.log("Form data before submission:", submitData);
-      // Log the data being submitted
-      if (isEditMode) {
-        submitData.userId = formData.userId; // Include userId for updates
-      } else {
-        submitData.userId = 0; // Set userId to 0 for new users
-      }
-      const response = await fetch(`${API_BASE_URL}/SaveUser`, {
+      console.log("submitData", submitData);
+
+      const response = await fetch(`${API_URL}/SaveUserMasterDetails/users`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "content-type": "application/json",
+        },
         body: JSON.stringify(submitData),
       });
+
+      console.log("response", response);
 
       const result = await response.json();
       if (result.status === 1) {
@@ -249,233 +224,235 @@ const AddUsers = ({ record, onSubmitSuccess, showModal, onClose }) => {
   };
 
   return (
-    <Modal
-      show={showModal}
-      onHide={onClose}
-      size="lg"
-      centered
-      backdrop="static"
-    >
-      <Modal.Header>
-        <Modal.Title>{record ? "Add User" : "Edit User"}</Modal.Title>
-        <button
-          type="button"
-          className="modal-close-button"
-          aria-label="Close"
-          onClick={onClose}
-        >
-          <X size={12} />
-        </button>
-      </Modal.Header>
-
+    <>
       {isLoading && <Loader />}
-      <Form onSubmit={handleSubmit}>
-        <Modal.Body>
-          <Row className="mb-3">
-            <Col md={12} className="text-center">
-              {formData.base64 ? (
-                <div style={{ position: "relative", display: "inline-block" }}>
-                  <img
-                    src={formData.base64}
-                    alt="Avatar"
-                    className="rounded-circle"
-                    style={{ width: 100, height: 100, objectFit: "cover" }}
-                  />
-                  <Button
-                    variant="danger"
-                    className="small-remove-btn"
-                    onClick={handleImageRemove}
+      <Modal
+        show={showModal}
+        onHide={onClose}
+        size="lg"
+        centered
+        backdrop="static"
+      >
+        <Modal.Header>
+          <Modal.Title>{isEditMode ? "Edit User" : "Add User"}</Modal.Title>
+          <button
+            type="button"
+            className="modal-close-button"
+            aria-label="Close"
+            onClick={onClose}
+          >
+            <X size={12} />
+          </button>
+        </Modal.Header>
+
+        {isLoading && <Loader />}
+        <Form onSubmit={handleSubmit}>
+          <Modal.Body>
+            <Row className="mb-3 text-center">
+              <Col>
+                {formData.base64 ? (
+                  <div
+                    style={{ position: "relative", display: "inline-block" }}
                   >
-                    <X size={14} />
-                  </Button>
-                </div>
+                    <img
+                      src={formData.base64}
+                      alt="Avatar"
+                      className="rounded-circle"
+                      style={{ width: 100, height: 100, objectFit: "cover" }}
+                    />
+                    <Button
+                      variant="danger"
+                      className="small-remove-btn"
+                      onClick={handleImageRemove}
+                    >
+                      <X size={14} />
+                    </Button>
+                  </div>
+                ) : (
+                  <Form.Label
+                    htmlFor="upload-avatar"
+                    className="btn btn-outline-primary"
+                  >
+                    <PlusCircle className="me-2" /> Upload Avatar
+                  </Form.Label>
+                )}
+                <Form.Control
+                  id="upload-avatar"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: "none" }}
+                />
+              </Col>
+            </Row>
+
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Full Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    className="form-control"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Phone</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="mobile"
+                    className="form-control"
+                    value={formData.mobile}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    className="form-control"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="username"
+                    className="form-control"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Password</Form.Label>
+                  <InputGroup>
+                    <Form.Control
+                      type={showPwd ? "text" : "password"}
+                      name="password"
+                      className="form-control"
+                      value={passwords.password}
+                      onChange={handlePasswordChange}
+                      required
+                    />
+                    <Button
+                      variant="outline-secondary"
+                      onClick={() => setShowPwd(!showPwd)}
+                    >
+                      {showPwd ? "Hide" : "Show"}
+                    </Button>
+                  </InputGroup>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Confirm Password</Form.Label>
+                  <InputGroup>
+                    <Form.Control
+                      type={showPwd ? "text" : "password"}
+                      name="confirm"
+                      className="form-control"
+                      value={passwords.confirm}
+                      onChange={handlePasswordChange}
+                      isInvalid={!!passwords.error}
+                      required
+                    />
+                    <Button
+                      variant="outline-secondary"
+                      onClick={() => setShowPwd(!showPwd)}
+                    >
+                      {showPwd ? "Hide" : "Show"}
+                    </Button>
+                  </InputGroup>
+                  <Form.Control.Feedback type="invalid">
+                    {passwords.error}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Role</Form.Label>
+                  <Select
+                    options={ROLE_OPT}
+                    value={formData?.role}
+                    onChange={handleRoleSelect}
+                    placeholder="Choose Role"
+                    isSearchable
+                    required
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={12}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    name="remark"
+                    value={formData.remark}
+                    onChange={handleChange}
+                    rows={3}
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={3}>
+                <Form.Group className="d-flex justify-content-between align-items-center">
+                  <Form.Label className="mb-0">Status</Form.Label>
+                  <Form.Check
+                    type="switch"
+                    id="statusToggle"
+                    name="status"
+                    checked={formData.status}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Modal.Body>
+
+          <Modal.Footer className="d-flex justify-content-end gap-2">
+            <Button variant="secondary" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  {isEditMode ? "Updating..." : "Adding..."}
+                </>
+              ) : isEditMode ? (
+                "Update"
               ) : (
-                <Form.Label
-                  htmlFor="upload-avatar"
-                  className="btn btn-outline-primary"
-                >
-                  <PlusCircle className="me-2" /> Upload Avatar
-                </Form.Label>
+                "Add"
               )}
-              <Form.Control
-                id="upload-avatar"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ display: "none" }}
-              />
-            </Col>
-          </Row>
-
-          <Row className="mb-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Full Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-            </Col>
-
-            <Col className="mb-3" md={6}>
-              <Form.Group>
-                <Form.Label>Phone</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="mobile"
-                  value={formData.mobile}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-            </Col>
-
-            <Col className="mb-3" md={6}>
-              <Form.Group>
-                <Form.Label>Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-            </Col>
-
-            <Col className="mb-3" md={6}>
-              <Form.Group>
-                <Form.Label>Username</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col className="mb-3" md={6}>
-              <Form.Group>
-                <Form.Label>Password</Form.Label>
-                <InputGroup>
-                  <Form.Control
-                    type={showPwd ? "text" : "password"}
-                    name="password"
-                    value={passwords.password}
-                    onChange={handlePasswordChange}
-                    required
-                  />
-                  <Button
-                    variant="outline-secondary"
-                    onClick={() => setShowPwd(!showPwd)}
-                  >
-                    {showPwd ? "Hide" : "Show"}
-                  </Button>
-                </InputGroup>
-              </Form.Group>
-            </Col>
-
-            <Col className="mb-3" md={6}>
-              <Form.Group>
-                <Form.Label>Confirm Password</Form.Label>
-                <InputGroup>
-                  <Form.Control
-                    type={showPwd ? "text" : "password"}
-                    name="confirm"
-                    value={passwords.confirm}
-                    onChange={handlePasswordChange}
-                    isInvalid={!!passwords.error}
-                    required
-                  />
-                  <Button
-                    variant="outline-secondary"
-                    onClick={() => setShowPwd(!showPwd)}
-                  >
-                    {showPwd ? "Hide" : "Show"}
-                  </Button>
-                </InputGroup>
-                <Form.Control.Feedback type="invalid">
-                  {passwords.error}
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Col>
-            <Col className="mb-3" md={6}>
-              <Form.Group>
-                <Form.Label>Role</Form.Label>
-                <Select
-                  classNamePrefix="react-select"
-                  options={roleOptions}
-                  placeholder="Choose Role"
-                  name="role"
-                  // value={dropdowns?.selectedUnit}
-                  // onChange={(selectedOption) =>
-                  //   setDropdowns((prev) => ({
-                  //     ...prev,
-                  //     selectedUnit: selectedOption,
-                  //   }))
-                  // }
-                  isLoading={isLoading}
-                  isSearchable={true}
-                  required
-                />
-              </Form.Group>
-            </Col>
-
-            <Col className="mb-3" md={12}>
-              <Form.Group>
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  name="remark"
-                  value={formData.remark}
-                  onChange={handleChange}
-                  rows={3}
-                />
-              </Form.Group>
-            </Col>
-
-            {/* Status */}
-            <Col md={3}>
-              <Form.Group className="d-flex justify-content-between align-items-center">
-                <Form.Label className="mb-0">
-                  Status<span className="text-danger ms-1">*</span>
-                </Form.Label>
-                <Form.Check
-                  type="switch"
-                  id="statusToggle"
-                  name="status"
-                  checked={!record ? 1 : formData?.status}
-                  onChange={handleChange}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-        </Modal.Body>
-
-        <Modal.Footer className="d-flex justify-content-end gap-2">
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Spinner animation="border" size="sm" className="me-2" />
-                {isEditMode ? "Updating..." : "Adding..."}
-              </>
-            ) : isEditMode ? (
-              "Update"
-            ) : (
-              "Add"
-            )}
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    </>
   );
 };
 
